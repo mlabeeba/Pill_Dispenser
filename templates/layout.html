@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Prescription Dispenser{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<nav>
+    <ul class="logo-container">
+        <li class="logo">
+            <h1 style="font-weight: lighter";>Smart Prescription Dispenser</h1>
+        </li>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('medications') }}">Medication</a></li>
+            <li><a href="{{ url_for('schedule') }}">Schedules</a></li>
+            <li><a href="{{ url_for('alerts') }}">Alerts</a></li>
+            <li><a href="{{ url_for('managepatients') }}">Manage Patients</a></li>
+        </ul>
+    </ul>
+
+    <ul class="profile-logout-buttons">
+        <li><a href="#" class="profile-btn">My Profile</a></li>
+        <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+    </ul>
+</nav>
+
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>

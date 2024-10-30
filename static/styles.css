@@ -1,0 +1,349 @@
+/* General Styles */
+html, body {
+    font-family: Inter, sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden; /* Prevent horizontal scrolling */
+    overflow-x: hidden;
+}
+
+/* main content */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #D9D9D9;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between logo, nav links, and buttons */
+}
+
+/* For Logo */
+.logo-container {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Logo Styling */
+.logo-container .logo h1 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    border-right: 1.5px solid black;
+    padding: 5px 30px;
+}
+
+/* Navigation Links */
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+}
+
+.nav-links li {
+    margin-left: 30px;
+}
+
+/* Nav Link Styling */
+.nav-links li a {
+    color: #8B8B8B;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.nav-links li a:hover {
+    color: black;
+}
+
+/* Profile and Logout Buttons */
+.profile-logout-buttons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-right: 40px;
+}
+
+.profile-btn, .logout-btn {
+    background-color: white;
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 10px 25px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}
+
+.profile-btn:hover, .logout-btn:hover {
+    background-color: #eee;
+    text-decoration: underline;
+}
+
+nav ul li.logo {
+    margin-right: auto;
+}
+
+nav ul li.logo h1 {
+    color: black;
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.pharmacist-name {
+    font-size: 45px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.dashboard-section .dropdown {
+    margin-top: 10px;
+    text-align: left;
+}
+
+.dropdown select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.dashboard-cards a{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    text-decoration: none;
+}
+
+.med-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.schedule-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.alerts-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.card img {
+    max-height: 200px;
+    padding-top: 10px;
+    margin-top: 10px;
+    display: flex;
+}
+
+.card h3{
+    font-size: 22px;
+    text-decoration: none;
+    color: #333333;
+    font-weight: lighter;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+    font-weight: 400;
+}
+
+.med-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.alerts-card:hover{
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.schedule-card:hover{
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Login Page */
+.login-body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: x-small;
+}
+
+.login-container {
+    display: flex;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.login-form {
+    background-color: white;
+    margin: 20px 20px;
+    padding: 40px;
+    padding-right: 60px;
+    border: 1.5px solid black;
+}
+
+.login-left {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.login-left img {
+    width: 80%;
+    height: auto;
+
+}
+
+.login-right {
+    width: 50%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    width: 80%;
+    margin-right: 60px;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.login-btn {
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 107%;
+}
+
+.login-btn:hover {
+    background-color: #555;
+}
+
+.login-logo {
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    margin-top: 30px;
+    font-size: 24px;
+    font-weight: lighter;
+}
+
+.login-image {
+    width: 100%;
+    height: auto;
+    margin-left: 20px;
+}
+
+.logout-container {
+    justify-content: center;
+    padding-left: 30px;
+}
+

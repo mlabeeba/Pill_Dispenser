@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<div class="login-logo">
+        <h1 style="font-weight: normal; font-size: medium;">Smart Prescription Dispenser</h1>
+    </div>
+<body class="login-body">
+
+<div class="login-container">
+    <div class="login-image">
+        <img src="{{ url_for('static', filename='images/login-image.png') }}" alt="Login Image" class="login-image">
+    </div>
+
+    <div class="login-form">
+        <h2>Login</h2>
+        <form action="{{ url_for('login') }}" method="POST">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

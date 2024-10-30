@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="dashboard-section">
+            <h1 class="pharmacist-name">Welcome <strong>{{ pharmacist_name }}</strong></h1>
+            <div class="dropdown">
+                <label for="patient" style="font-weight: bold;">Patient: </label>
+                <select id="patient" name="patient">
+                    <option>Maria Labeeba</option>
+                    <option>Nasya James</option>
+                    <option>Harrison Kalathil</option>
+                    <option>Maninder Arora</option>
+                </select>
+            </div>
+
+            <div class="dashboard-cards">
+
+                <a class="med-card" href="{{ url_for('medications') }}">
+                    <div class="card">
+                        <h3>
+                            Medication
+                            <img src="{{ url_for('static', filename='images/medications-image.png') }}"
+                                 alt="Medications">
+                        </h3>
+                    </div>
+                </a>
+
+                <a class="schedule-card" href="{{ url_for('schedule') }}">
+                    <div class="card">
+                        <h3>
+                            Schedule
+                            <img src="{{ url_for('static', filename='images/schedules-image.png') }}" alt="Schedules">
+                        </h3>
+                    </div>
+                </a>
+
+                <a class="alerts-card" href="{{ url_for('alerts') }}">
+                    <div class="card">
+                        <h3>
+                            Alerts
+                            <img src="{{ url_for('static', filename='images/alerts-image.png') }}" alt="Alerts">
+                        </h3>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
