@@ -3,6 +3,13 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='dash-style.css') }}">
+    </head>
+
     <div class="container">
         <div class="dashboard-section">
             <h1 class="pharmacist-name">Welcome <strong>{{ pharmacist_name }}</strong></h1>
