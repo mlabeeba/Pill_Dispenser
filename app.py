@@ -31,6 +31,7 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
+
     pharmacist_name = "Pharmacist 1"
     return render_template('dashboard.html', pharmacist_name=pharmacist_name)
 
