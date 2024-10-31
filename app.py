@@ -18,12 +18,14 @@ def login():
 
         #check for valid use
         user = get_user_by_email(email)
-        if(user is None):
+        if user is None:
+            #implement flash message? and error pop up
             print('Invalid email')
             return redirect(url_for('login'))
-        if(user.password == password):
+        if user.password == password:
             return redirect(url_for('dashboard'))
         else:
+            #implement flash message? and error pop up
             print('Invalid password')
     return render_template('login.html')
 
