@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 
+from database import get_user_by_email
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -11,7 +13,18 @@ def root():
 def login():
     if request.method == 'POST':
         # Handle login logic
-        return redirect(url_for('dashboard'))
+        email = request.form['email']
+        password = request.form['password']
+
+        #check for valid use
+        user = get_user_by_email(email)
+        if(user is None):
+            print('Invalid email')
+            return redirect(url_for('login'))
+        if(user.password == password):
+            return redirect(url_for('dashboard'))
+        else:
+            print('Invalid password')
     return render_template('login.html')
 
 @app.route('/dashboard')
