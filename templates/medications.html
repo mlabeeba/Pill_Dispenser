@@ -1,9 +1,76 @@
-<!-- templates/medications.html -->
+
 {% extends "layout.html" %}
 
 {% block title %}Manage Medications{% endblock %}
 
 {% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Medications</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='med-style.css') }}">
+</head>
+
+<div class="container">
     <h2>Manage Medications</h2>
-    <p>This is where the pharmacist can manage medications.</p>
+
+    <div class="dropdown-container">
+        <div class="dropdown">
+            <label for="patient">Patient:</label>
+            <select id="patient" name="patient">
+                <option>Maria Labeeba</option>
+                <option>Nasya James</option>
+                <option>Harrison Kalathil</option>
+                <option>Maninder Arora</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="med-table-container">
+            <div class="med-heading-container">
+                <h4>Current Rotation</h4>
+
+                <div class="button-group">
+                    <button type="button">Edit</button>
+                    <button type="button">Add</button>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>Medication Name</th>
+                        <th>Dosage</th>
+                        <th>Stock Levels</th>
+                        <th>Schedule</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Medication 1</td>
+                        <td>4</td>
+                        <td>Mid</td>
+                        <td>2 months</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="med-list">
+            <h4>Medication List</h4>
+            <ul>
+                <li>Medication 1</li>
+                <li>Medication 2</li>
+                <li>Medication 3</li>
+                <li>Medication 4</li>
+            </ul>
+            <button type="button">Push Changes to Device</button>
+        </div>
+    </div>
+</div>
+
+
+
 {% endblock %}
