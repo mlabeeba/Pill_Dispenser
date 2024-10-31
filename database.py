@@ -1,9 +1,17 @@
 #imports
 from sqlalchemy import MetaData, create_engine, Column, Integer, String, Enum, DateTime, func
 from sqlalchemy.orm import declarative_base, sessionmaker
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Load environment variables from .env file
+
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASS")
+db_name = os.getenv("DB_NAME")
 
 metadata = MetaData()
-engine = create_engine('postgresql://nasyajames:Gymnast189@localhost:5432/pill_dispenser')
+engine = create_engine(f"postgresql://{db_user}:{db_password}@localhost:5432/{db_name}")
 Base = declarative_base()
 db_session = sessionmaker(bind=engine)()
 
