@@ -1,0 +1,7 @@
+# created by virtualenv automatically
+.venv/*
+database.env
+
+#DO NOT PUSH CHANGES TO MISC.XML OR NMK01.IML
+misc.xml
+NMK01.iml
