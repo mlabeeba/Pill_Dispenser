@@ -32,5 +32,4 @@ def get_user_by_username(username):
 def get_user_by_email(email):
     return db_session.query(Users).filter(Users.email == email).first()
 
-print(get_user_by_username('admin').email)
 
