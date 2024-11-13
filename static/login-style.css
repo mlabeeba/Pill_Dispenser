@@ -1,0 +1,120 @@
+/* Login Page */
+.login-body {
+    margin: 200px;
+    font-family: Inter, sans-serif;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: x-small;
+}
+
+.login-container {
+    display: flex;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.login-form {
+    background-color: white;
+    margin: 20px 20px;
+    padding: 40px;
+    padding-right: 60px;
+    border: 1.5px solid black;
+}
+
+.login-left {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.login-left img {
+    width: 80%;
+    height: auto;
+
+}
+
+.login-right {
+    width: 50%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    width: 80%;
+    margin-right: 60px;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.login-btn {
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 107%;
+}
+
+.login-btn:hover {
+    background-color: #555;
+}
+
+.login-logo {
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    margin-top: 30px;
+    font-size: 24px;
+    font-weight: lighter;
+}
+
+.login-image {
+    width: 100%;
+    height: auto;
+    margin-left: 20px;
+}
+
+.logout-container {
+    justify-content: center;
+    padding-left: 30px;
+}
+

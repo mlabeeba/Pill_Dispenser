@@ -7,7 +7,6 @@ app = Flask(__name__)
 @app.route('/')
 def root():
     return redirect(url_for('login'))
-    return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -16,18 +15,24 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        #check for valid use
+        # Check for valid user
         user = get_user_by_email(email)
         if user is None:
-            #implement flash message? and error pop up
             print('Invalid email')
-            return redirect(url_for('login'))
+            return redirect(url_for('error'))  # Redirect to error page for invalid email
+
         if user.password == password:
             return redirect(url_for('dashboard'))
         else:
-            #implement flash message? and error pop up
             print('Invalid password')
+            return redirect(url_for('error'))  # Redirect to error page for invalid password
+
     return render_template('login.html')
+
+@app.route('/login-error')
+def error():
+    # Render the error page
+    return render_template('login-error.html')
 
 @app.route('/dashboard')
 def dashboard():

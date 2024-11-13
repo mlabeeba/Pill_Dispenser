@@ -1,0 +1,110 @@
+/* Dashboard Section */
+.dashboard-section {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.pharmacist-name {
+    font-size: 45px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.dashboard-section .dropdown {
+    margin-top: 10px;
+    text-align: left;
+}
+
+.dropdown select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.dashboard-cards a{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    text-decoration: none;
+}
+
+.med-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.schedule-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.alerts-card{
+    background-color: #e0e0e0;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 30%;
+    text-align: center;
+    margin: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.card img {
+    max-height: 200px;
+    padding-top: 10px;
+    margin-top: 10px;
+    display: flex;
+}
+
+.card h3{
+    font-size: 22px;
+    text-decoration: none;
+    color: #333333;
+    font-weight: lighter;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+    font-weight: 400;
+}
+
+.med-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.alerts-card:hover{
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.schedule-card:hover{
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
