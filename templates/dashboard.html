@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
+        <title>Dashboard</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='dash-style.css') }}">
     </head>
 
@@ -16,10 +16,9 @@
             <div class="dropdown">
                 <label for="patient" style="font-weight: bold;">Patient: </label>
                 <select id="patient" name="patient">
-                    <option>Maria Labeeba</option>
-                    <option>Nasya James</option>
-                    <option>Harrison Kalathil</option>
-                    <option>Maninder Arora</option>
+                    {% for name in patient_names %}
+                        <option>{{ name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
