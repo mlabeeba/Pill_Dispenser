@@ -16,55 +16,55 @@ Base = declarative_base()
 db_session = sessionmaker(bind=engine)()
 
 #Users table
-class Users(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
+class Pharmacists(Base):
+    __tablename__ = 'pharmacists'
+    pharmacist_id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    username = Column(String(100))
     email = Column(String(100))
     password = Column(String(100))
-    role = Column(Enum('pharmacist', 'patient', 'admin', name='role'))
-    created_at = Column(DateTime, default=func.now)
-
-def get_user_by_username(username):
-    return db_session.query(Users).filter(Users.username == username).first()
 
 def get_user_by_email(email):
-    return db_session.query(Users).filter(Users.email == email).first()
+    return db_session.query(Pharmacists).filter(Pharmacists.email == email).first()
+
+def get_pharmacist_by_id(pharmacist_id):
+    return db_session.query(Pharmacists).get(pharmacist_id)
+
+#Patients table
+class Patients(Base):
+    __tablename__ = 'patients'
+    patient_id = Column(Integer, primary_key=True)
+    pharmacist_id = Column(Integer, ForeignKey('pharmacists.pharmacist_id'))
+    name = Column(String(100))
+    dob = Column(DateTime)
+    age = Column(Integer)
+
 
 #Medications table
 class Medications(Base):
     __tablename__ = 'medications'
-    id = Column(Integer, primary_key=True)
+    medication_id = Column(Integer, primary_key=True)
+    patient_id = Column(Integer, ForeignKey('patients.patient_id'))
     name = Column(String(100))
-    description = Column(String(100))
+    stock_level = Column(Integer)
+    notes = Column(String(100))
     dose = Column(Integer)
-    created_at = Column(DateTime, default=func.now)
+
+def get_medications_by_patient_id(patient_id):
+    return db_session.query(Medications).filter(Medications.patient_id == patient_id).all()
 
 
 #Schedule table
 class Schedule(Base):
-    __tablename__ = 'schedule'
-    id = Column(Integer, primary_key=True)
-    medication_id = Column(Integer, ForeignKey('medications.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
-    time = Column(DateTime)
-    created_at = Column(DateTime, default=func.now)
-
-#Logs table
-class Logs(Base):
-    __tablename__ = 'logs'
-    id = Column(Integer, primary_key=True)
-    schedule_id = Column(Integer, ForeignKey('schedule.id'))
-    acknowledged_at = Column(DateTime)
-    status = Column(Enum('taken', 'missed', 'skipped', name='log_status'))
+    __tablename__ = 'schedules'
+    schedule_id = Column(Integer, primary_key=True)
+    start_date = Column(DateTime)
+    end_date = Column(DateTime)
 
 #Alerts table
 class Alerts(Base):
     __tablename__ = 'alerts'
-    id = Column(Integer, primary_key=True)
-    schedule_id = Column(Integer, ForeignKey('schedule.id'))
-    message = Column(String(100))
-    alert_time = Column(DateTime)
-    status = Column(Enum('pending', 'sent', 'acknowledged', name='alert_status'))
-    created_at = Column(DateTime, default=func.now)
+    alert_id = Column(Integer, primary_key=True)
+    pharmacist_id = Column(Integer, ForeignKey('pharmacists.pharmacist_id'))
+    date = Column(DateTime)
+    status = Column(Enum('pending', 'triggered', 'acknowledged', name='alert_status'))
+    notes = Column(String(100))

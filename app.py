@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+import secrets
 
-from database import get_user_by_email
+from flask import Flask, render_template, request, redirect, url_for, session
+
+from database import *
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
 
 @app.route('/')
 def root():
@@ -22,6 +25,7 @@ def login():
             return redirect(url_for('error'))  # Redirect to error page for invalid email
 
         if user.password == password:
+            session['pharmacist_id'] = user.pharmacist_id
             return redirect(url_for('dashboard'))
         else:
             print('Invalid password')
@@ -36,8 +40,12 @@ def error():
 
 @app.route('/dashboard')
 def dashboard():
+    pharmacist = None
+    if 'pharmacist_id' in session:
+        pharmacist_id = session['pharmacist_id']
+        pharmacist = get_pharmacist_by_id(pharmacist_id)  # Fetch the pharmacist by ID
 
-    pharmacist_name = "Pharmacist 1"
+    pharmacist_name = pharmacist.name if pharmacist else "Unknown Pharmacist"
     return render_template('dashboard.html', pharmacist_name=pharmacist_name)
 
 @app.route('/medications')
@@ -58,6 +66,7 @@ def managepatients():
 
 @app.route('/logout')
 def logout():
+    session.clear()
     return render_template('logout.html')
 
 if __name__ == '__main__':
