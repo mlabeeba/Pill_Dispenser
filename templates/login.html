@@ -4,29 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='login-style.css') }}">
 </head>
-<div class="login-logo">
-        <h1 style="font-weight: normal; font-size: medium;">Smart Prescription Dispenser</h1>
-    </div>
-<body class="login-body">
+<body>
+<div class="login">
 
-<div class="login-container">
-    <div class="login-image">
-        <img src="{{ url_for('static', filename='images/login-image.png') }}" alt="Login Image" class="login-image">
-    </div>
+    <div class="div">
 
-    <div class="login-form">
-        <h2>Login</h2>
-        <form action="{{ url_for('login') }}" method="POST">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <div class="logo">
+            <div class="logo-name">Smart Prescription Dispenser</div>
+        </div>
 
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <div class="login-container">
+            <div class="login-form">
+                <h2>Login</h2>
 
-            <button type="submit" class="login-btn">Sign In</button>
-        </form>
+
+                <!-- Flash message display area, moved inside the login form container -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+
+                <form action="{{ url_for('login') }}" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <button class="signin-btn" type="submit">Sign In</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 </body>
