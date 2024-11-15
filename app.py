@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+import datetime
+import secrets
 
-from database import get_user_by_email
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+
+from database import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
-app.secret_key = 'labeeba'  # Replace with a secure secret key
 patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
 patients = get_all_patients()
 
@@ -28,15 +30,10 @@ def login():
             flash('Invalid password. Please try again.', 'danger')
             return render_template('login.html')
         else:
-            print('Invalid password')
-            return redirect(url_for('error'))  # Redirect to error page for invalid password
+            session['pharmacist_id'] = user.pharmacist_id
+            return redirect(url_for('dashboard'))
 
     return render_template('login.html')
-
-@app.route('/login-error')
-def error():
-    # Render the error page
-    return render_template('login-error.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -65,12 +62,12 @@ def managepatients():
     search_term = request.args.get('search', '')
 
     if search_term:
-        patients = db_session.query(Patients).filter(Patients.patient_name.ilike(f"%{search_term}%")).all()
+        patients_list = search_patients_by_name(search_term)
     else:
-        patients = db_session.query(Patients).all()
+        patients_list = get_all_patients()
 
     # Check and format DOB for each patient
-    for patient in patients:
+    for patient in patients_list:
         if isinstance(patient.dob, str):
             try:
                 # Try to parse the string to a datetime object
@@ -82,25 +79,25 @@ def managepatients():
             # Format datetime object to desired string format
             patient.dob = patient.dob.strftime('%Y-%m-%d')
 
-    return render_template('manage-patients.html', patients=patients, search_term=search_term)
+    return render_template('manage-patients.html', patients=patients_list, search_term=search_term)
 
 @app.route('/searchpatients', methods=['GET'])
 def searchpatients():
     search_term = request.args.get('search', '')
 
     if search_term:
-        patients = db_session.query(Patients).filter(Patients.patient_name.ilike(f"%{search_term}%")).all()
+        patients_list = search_patients_by_name(search_term)
     else:
-        patients = db_session.query(Patients).all()
+        patients_list = get_all_patients()
 
     # Convert the patient data to JSON format
     patients_data = [{
-        'patient_name': patient.patient_name,
+        'patient_name': patient.name,
         'age': patient.age,
         'dob': patient.dob,
-        'medications': patient.medications,
+        #'medications': patient.medications,
         'notes': patient.notes
-    } for patient in patients]
+    } for patient in patients_list]
 
     return jsonify(patients_data)
 

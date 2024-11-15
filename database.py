@@ -38,21 +38,14 @@ class Patients(Base):
     dob = Column(DateTime)
     age = Column(Integer)
 
-#Patients Table
-class Patients(Base):
-    __tablename__ = 'patients'
-    patient_id = Column(Integer, primary_key=True)  # Update to match the actual primary key column name
-    patient_name = Column(String(100))
-    age = Column(Integer)
-    dob = Column(DateTime)
-    medications = Column(String(100))
-    notes = Column(String(100))
-
-def get_all_patient_names():
-    return db_session.query(Patients.patient_name).all()
+def search_patients_by_name(name):
+    return db_session.query(Patients).filter(Patients.name.ilike(f"%{name}%")).all()
 
 def get_all_patients():
-    return db_session.query(Patients).all()  # Retrieve all columns for each patient
+    return db_session.query(Patients).all()
+
+def get_all_patient_names():
+    return db_session.query(Patients.name).all()
 
 #Medications table
 class Medications(Base):
@@ -66,7 +59,6 @@ class Medications(Base):
 
 def get_medications_by_patient_id(patient_id):
     return db_session.query(Medications).filter(Medications.patient_id == patient_id).all()
-
 
 #Schedule table
 class Schedule(Base):

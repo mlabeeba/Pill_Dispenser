@@ -31,7 +31,7 @@
                 <th>Patient Name</th>
                 <th>Age</th>
                 <th>DOB</th>
-                <th>Medications</th>
+                <!-- <th>Medications</th> -->
                 <th>Notes</th>
             </tr>
         </thead>
@@ -41,7 +41,7 @@
                     <td>{{ patient.patient_name }}</td>
                     <td>{{ patient.age }}</td>
                     <td>{{ patient.dob }}</td>
-                    <td>{{ patient.medications }}</td>
+                    <!-- <td>{{ patient.medications }}</td> -->
                     <td>{{ patient.notes }}</td>
                 </tr>
             {% endfor %}
@@ -73,7 +73,7 @@
                             <td>${patient.patient_name}</td>
                             <td>${patient.age}</td>
                             <td>${patient.dob}</td>
-                            <td>${patient.medications}</td>
+                            <!-- <td>${patient.medications}</td> -->
                             <td>${patient.notes}</td>
                         `;
                         tableBody.appendChild(row);
