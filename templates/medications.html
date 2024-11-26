@@ -18,8 +18,8 @@
             <div class="dropdown">
                 <label for="patient">Patient:</label>
                 <select id="patient" name="patient">
-                    {% for name in patient_names %}
-                        <option>{{ name }}</option>
+                    {% for patient in patient_names %}
+                        <option>{{ patient.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -43,15 +43,19 @@
                             <th>Medication Name</th>
                             <th>Dosage</th>
                             <th>Stock Levels</th>
-                            <th>Schedule</th>
+                            <!--<th>Schedule</th>-->
+                            <th>Notes</th>
                         </tr>
+                        {% for med in medications %}
                         <tr>
-                            <td>1</td>
-                            <td>Medication 1</td>
-                            <td>4</td>
-                            <td>Mid</td>
-                            <td>2 months</td>
+                            <td>{{ med.medication_id }}</td>
+                            <td>{{ med.name }}</td>
+                            <td>{{ med.dosage }}</td>
+                            <td>{{ med.stock_level }}</td>
+                            <!-- <td>{{ med.schedule }}</td> -->
+                            <td>{{ med.notes }}</td>
                         </tr>
+                        {% endfor %}
                     </table>
                 </div>
             </div>
@@ -59,12 +63,11 @@
             <div class="med-list">
                 <h4>Medication List</h4>
                 <ul>
-                    <li>Medication 1</li>
-                    <li>Medication 2</li>
-                    <li>Medication 3</li>
-                    <li>Medication 4</li>
+                    {% for med in medications %}
+                        <li>{{ med.name }}</li>
+                    {% endfor %}
                 </ul>
-                <button type="button">Push Changes to Device</button>
+                <button type="button" id="push-changes-btn">Push Changes to Device</button>
             </div>
         </div>
     </div>

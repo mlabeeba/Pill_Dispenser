@@ -7,8 +7,8 @@ from database import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
-patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
-patients = get_all_patients()
+# patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
+# my_patients = get_my_patients(session['pharmacist_id'])
 
 @app.route('/')
 def root():
@@ -47,7 +47,11 @@ def dashboard():
 
 @app.route('/medications')
 def medications():
-    return render_template('medications.html', patient_names=patient_names)
+    patient_list = get_my_patients(session['pharmacist_id'])
+    for patient in patient_list:
+        medication_list = get_medications_by_patient_id(patient.patient_id)
+
+    return render_template('medications.html', patient_names = patient_list, medications = medication_list)
 
 @app.route('/schedule')
 def schedule():
@@ -64,18 +68,11 @@ def managepatients():
     if search_term:
         patients_list = search_patients_by_name(search_term)
     else:
-        patients_list = get_all_patients()
+        patients_list = get_my_patients(session['pharmacist_id'])
 
     # Check and format DOB for each patient
     for patient in patients_list:
-        if isinstance(patient.dob, str):
-            try:
-                # Try to parse the string to a datetime object
-                patient.dob = datetime.strptime(patient.dob, '%Y-%m-%d %H:%M:%S')  # Adjust format if needed
-            except ValueError:
-                # Handle the case if the format doesn't match
-                pass
-        if isinstance(patient.dob, datetime):
+        if isinstance(patient.dob, datetime.date):
             # Format datetime object to desired string format
             patient.dob = patient.dob.strftime('%Y-%m-%d')
 

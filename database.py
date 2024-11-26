@@ -44,6 +44,9 @@ def search_patients_by_name(name):
 def get_all_patients():
     return db_session.query(Patients).all()
 
+def get_my_patients(pharmacist_id):
+    return db_session.query(Patients).filter(Patients.pharmacist_id == pharmacist_id).all()
+
 def get_all_patient_names():
     return db_session.query(Patients.name).all()
 
@@ -55,7 +58,7 @@ class Medications(Base):
     name = Column(String(100))
     stock_level = Column(Integer)
     notes = Column(String(100))
-    dose = Column(Integer)
+    dosage = Column(Integer)
 
 def get_medications_by_patient_id(patient_id):
     return db_session.query(Medications).filter(Medications.patient_id == patient_id).all()
