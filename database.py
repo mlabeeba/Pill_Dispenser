@@ -47,9 +47,6 @@ def get_all_patients():
 def get_my_patients(pharmacist_id):
     return db_session.query(Patients).filter(Patients.pharmacist_id == pharmacist_id).all()
 
-def get_all_patient_names():
-    return db_session.query(Patients.name).all()
-
 #Medications table
 class Medications(Base):
     __tablename__ = 'medications'
