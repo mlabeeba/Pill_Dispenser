@@ -13,13 +13,14 @@ def root():
 
 @app.route('/dashboard')
 def dashboard():
-    pharmacist_name = 'Pharmacist 1';
-    patient_names = [p.patient_name for p in get_all_patients()]
+    pharmacist_name = 'Pharmacist 1'
+    patient_names = [p['patient_name'] for p in get_all_patients()]  # Use correct dictionary key
     return render_template('dashboard.html', pharmacist_name=pharmacist_name, patient_names=patient_names)
 
 @app.route('/medications')
 def medications():
-    return render_template('medications.html')
+    patient_names = [p['patient_name'] for p in get_all_patients()]  # Use correct dictionary key
+    return render_template('medications.html', patient_names=patient_names)
 
 @app.route('/schedule')
 def schedule():
