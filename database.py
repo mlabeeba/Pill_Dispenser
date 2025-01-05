@@ -10,8 +10,25 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 # Fetch all patients
 def get_all_patients():
-    response = supabase.table('patients').select("*").execute()
-    return response.data
+    response = supabase.table('patients') \
+        .select('patient_name, age, dob, medications(med_name, med_notes)') \
+        .execute()
+
+    # Process data to flatten structure
+    patients = []
+    for patient in response.data:
+        medications = patient.get('medications', [])
+        med_names = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
+        med_notes = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
+
+        patients.append({
+            'patient_name': patient['patient_name'],
+            'age': patient['age'],
+            'dob': patient['dob'],
+            'medications': med_names,
+            'notes': med_notes
+        })
+    return patients
 
 # Fetch patient names
 def get_all_patient_names():

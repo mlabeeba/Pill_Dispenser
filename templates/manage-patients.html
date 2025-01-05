@@ -4,89 +4,92 @@
 
 {% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Patients</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='patient-style.css') }}">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manage Patients</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='patient-style.css') }}">
+    </head>
 
-<div class="manage-patients-container">
-    <h1>Manage Patients</h1>
+    <div class="manage-patients-container">
+        <h1>Manage Patients</h1>
 
-    <!-- Search form with input field -->
-    <div class="search-bar">
-        <input type="text" name="search" placeholder="Search Patient" id="searchPatient">
-        <button type="button" class="search-btn">
-            <img src="{{ url_for('static', filename='images/search.png') }}" alt="Search" class="search-icon">
-            Search
-        </button>
-    </div>
+        <!-- Search form with input field -->
+        <div class="search-bar">
+            <input type="text" name="search" placeholder="Search Patient" id="searchPatient">
+            <button type="button" class="search-btn">
+                <img src="{{ url_for('static', filename='images/search.png') }}" alt="Search" class="search-icon">
+                Search
+            </button>
+        </div>
 
-    <!-- Patients table -->
-    <table class="patients-table">
-    <h4>Patients</h4>
-        <thead>
+        <!-- Patients table -->
+        <table class="patients-table">
+            <h4>Patients</h4>
+            <thead>
             <tr>
                 <th>Patient Name</th>
                 <th>Age</th>
                 <th>DOB</th>
-                <!-- <th>Medications</th> -->
+                <th>Medications</th>
                 <th>Notes</th>
             </tr>
-        </thead>
-        <tbody id="patientsTableBody">
+            </thead>
+            <tbody id="patientsTableBody">
             {% for patient in patients %}
                 <tr>
-                    <td>{{ patient.name }}</td>
-                    <td>{{ patient.age }}</td>
-                    <td>{{ patient.dob }}</td>
-                    <!-- <td>{{ patient.medications }}</td> -->
-                    <td>{{ patient.notes }}</td>
+                    <td>{{ patient['patient_name'] }}</td>
+                    <td>{{ patient['age'] }}</td>
+                    <td>{{ patient['dob'] }}</td>
+                    <td>{{ patient['medications'] if patient['medications'] else 'N/A' }}</td>
+                    <td>{{ patient['notes'] if patient['notes'] else 'N/A' }}</td>
                 </tr>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 
-<script>
-    // Select the search input and table body
-    const searchInput = document.getElementById('searchPatient');
-    const tableBody = document.getElementById('patientsTableBody');
+    <script>
+        const searchInput = document.getElementById('searchPatient');
+        const tableBody = document.getElementById('patientsTableBody');
 
-    // Listen for input on the search box
-    searchInput.addEventListener('input', function() {
-        const searchTerm = searchInput.value;
+        // Listen for input in the search bar
+        searchInput.addEventListener('input', function () {
+            const searchTerm = searchInput.value.trim(); // Get input value
 
-        // Send an AJAX request to the server
-        fetch(`/searchpatients?search=${searchTerm}`)
-            .then(response => response.json())
-            .then(data => {
-                // Clear the current table rows
-                tableBody.innerHTML = '';
+            // Send an AJAX request to the server
+            fetch(`/searchpatients?search=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing table rows
+                    tableBody.innerHTML = '';
 
-                // Populate the table with the new data
-                if (data.length > 0) {
-                    data.forEach(patient => {
+                    // Populate the table with new data
+                    if (data.length > 0) {
+                        data.forEach(patient => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                        <td>${patient.patient_name}</td>
+                        <td>${patient.age}</td>
+                        <td>${patient.dob}</td>
+                        <td>${patient.medications || 'N/A'}</td>
+                        <td>${patient.notes || 'N/A'}</td>
+                    `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        // Show message if no results
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${patient.name}</td>
-                            <td>${patient.age}</td>
-                            <td>${patient.dob}</td>
-                            <!-- <td>${patient.medications}</td> -->
-                            <td>${patient.notes}</td>
-                        `;
+                    <td colspan="5" style="text-align: center; color: gray;">
+                        No matching patients found.
+                    </td>`;
                         tableBody.appendChild(row);
-                    });
-                } else {
-                    // Display "No matching patients found" if no data is returned
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="5" style="text-align: center; color: gray;">No matching patients found.</td>`;
-                    tableBody.appendChild(row);
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    });
-</script>
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+    </script>
 
 {% endblock %}

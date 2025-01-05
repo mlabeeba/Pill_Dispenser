@@ -57,5 +57,21 @@ def login():
 def logout():
     return render_template('logout.html')
 
+@app.route('/searchpatients')
+def searchpatients():
+    search_term = request.args.get('search', '').lower()
+
+    # Fetch all patients
+    all_patients = get_all_patients()
+
+    # Filter patients based on search term
+    filtered_patients = [
+        p for p in all_patients
+        if search_term in p['patient_name'].lower()
+    ]
+
+    # Return the filtered list as JSON
+    return jsonify(filtered_patients)
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
