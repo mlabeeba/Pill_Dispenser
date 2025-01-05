@@ -31,17 +31,17 @@
                 <th>Patient Name</th>
                 <th>Age</th>
                 <th>DOB</th>
-                <th>Medications</th>
+                <!-- <th>Medications</th> -->
                 <th>Notes</th>
             </tr>
         </thead>
         <tbody id="patientsTableBody">
             {% for patient in patients %}
                 <tr>
-                    <td>{{ patient.patient_name }}</td>
+                    <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
                     <td>{{ patient.dob }}</td>
-                    <td>{{ patient.medications }}</td>
+                    <!-- <td>{{ patient.medications }}</td> -->
                     <td>{{ patient.notes }}</td>
                 </tr>
             {% endfor %}
@@ -70,10 +70,10 @@
                     data.forEach(patient => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${patient.patient_name}</td>
+                            <td>${patient.name}</td>
                             <td>${patient.age}</td>
                             <td>${patient.dob}</td>
-                            <td>${patient.medications}</td>
+                            <!-- <td>${patient.medications}</td> -->
                             <td>${patient.notes}</td>
                         `;
                         tableBody.appendChild(row);
