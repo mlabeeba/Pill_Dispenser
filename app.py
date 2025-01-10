@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id
 from datetime import datetime
+import secrets
 
 app = Flask(__name__)
-app.secret_key = 'labeeba'  # Replace with a secure secret key
+app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
 patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
 patients = get_all_patients()
 
@@ -28,7 +29,8 @@ def schedule():
 
 @app.route('/alerts')
 def alerts():
-    return render_template('alerts.html')
+    patient_names = [p['patient_name'] for p in get_all_patients()]  # Use correct dictionary key
+    return render_template('alerts.html', patient_names=patient_names)
 
 @app.route('/managepatients')
 def managepatients():

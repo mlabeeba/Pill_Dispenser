@@ -1,7 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Enum, func, MetaData, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+#imports
+from sqlalchemy import MetaData, create_engine, Column, Integer, String, Enum, DateTime, func, ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker
+from dotenv import load_dotenv
+import os
 from supabase import create_client, Client
+
+load_dotenv()  # Load environment variables from .env file
 
 # Supabase Configuration
 supabase_url = 'https://exavfgktkvnuywmxxyib.supabase.co'
@@ -51,3 +55,5 @@ def get_pharmacist_name_by_id(pharmacist_id):
     if response.data and len(response.data) > 0:
         return response.data[0]['pharmacist_name']  # Extract the name
     return None  # Return None if no result
+
+
