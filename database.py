@@ -1,4 +1,6 @@
 #imports
+from lib2to3.pytree import Base
+
 from sqlalchemy import MetaData, create_engine, Column, Integer, String, Enum, DateTime, func, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
