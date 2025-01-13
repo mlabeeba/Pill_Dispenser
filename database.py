@@ -1,6 +1,4 @@
 #imports
-from lib2to3.pytree import Base
-
 from sqlalchemy import MetaData, create_engine, Column, Integer, String, Enum, DateTime, func, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
@@ -58,4 +56,12 @@ def get_pharmacist_name_by_id(pharmacist_id):
         return response.data[0]['pharmacist_name']  # Extract the name
     return None  # Return None if no result
 
+#Fetch pharmacist specific patients
+def get_my_patients(pharmacist_id):
+    response = supabase.table('patients').select('*').eq('pharmacist_id', pharmacist_id).execute()
+    return response.data if response.data else None
 
+#Fetch patient medications
+def get_medications_by_patient(patient_id):
+    response = supabase.table('medications').select('*').eq('patient_id', patient_id).execute()
+    return response.data if response.data else None

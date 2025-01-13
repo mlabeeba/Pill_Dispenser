@@ -19,7 +19,7 @@
                 <label for="patient">Patient:</label>
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
-                        <option>{{ patient.name }}</option>
+                        <option value="{{ patient.patient_id }}">{{ patient.patient_name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -46,25 +46,27 @@
                             <!--<th>Schedule</th>-->
                             <th>Notes</th>
                         </tr>
-                        {% for med in medications %}
-                        <tr>
-                            <td>{{ med.medication_id }}</td>
-                            <td>{{ med.name }}</td>
-                            <td>{{ med.dosage }}</td>
-                            <td>{{ med.stock_level }}</td>
-                            <!-- <td>{{ med.schedule }}</td> -->
-                            <td>{{ med.notes }}</td>
-                        </tr>
-                        {% endfor %}
+                        <tbody id="medications-table-body">
+                            {% for med in medications %}
+                            <tr>
+                                <td>{{ med.med_id }}</td>
+                                <td>{{ med.med_name }}</td>
+                                <td>{{ med.dosage }}</td>
+                                <td>{{ med.stock_levels }}</td>
+                                <!-- <td>{{ med.schedule }}</td> -->
+                                <td>{{ med.med_notes }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                 </div>
             </div>
 
             <div class="med-list">
                 <h4>Medication List</h4>
-                <ul>
+                <ul id = "medications-list">
                     {% for med in medications %}
-                        <li>{{ med.name }}</li>
+                        <li>{{ med.med_name }}</li>
                     {% endfor %}
                 </ul>
                 <button type="button" id="push-changes-btn">Push Changes to Device</button>
@@ -72,6 +74,56 @@
         </div>
     </div>
 
+<script>
+    const patientDropdown = document.getElementById('patient');
+    const tableBody = document.getElementById('medications-table-body');
+    const medList = document.getElementById('medications-list');
 
+    // Listen for change in the dropdown
+    patientDropdown.addEventListener('change', function () {
+        const patientId = patientDropdown.value; // Get selected patient ID
+
+        // Send an AJAX request to the server
+        fetch(`/get_medications/${patientId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing table rows and list items
+                tableBody.innerHTML = '';
+                medList.innerHTML = '';
+
+                // Populate the table and list with new data
+                if (data.length > 0) {
+                    data.forEach(med => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${med.med_id}</td>
+                            <td>${med.med_name}</td>
+                            <td>${med.dosage}</td>
+                            <td>${med.stock_levels}</td>
+                            <td>${med.med_notes}</td>
+                        `;
+                        tableBody.appendChild(row);
+
+                        const listItem = document.createElement('li');
+                        listItem.textContent = med.med_name;
+                        medList.appendChild(listItem);
+                    });
+                } else {
+                    // Show message if no results
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="5" style="text-align: center; color: gray;">
+                            No medications found for the selected patient.
+                        </td>`;
+                    tableBody.appendChild(row);
+
+                    const listItem = document.createElement('li');
+                    listItem.textContent = 'No medications found for the selected patient.';
+                    medList.appendChild(listItem);
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    });
+</script>
 
 {% endblock %}

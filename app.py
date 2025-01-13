@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
-from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients
+from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
+    get_my_patients, get_medications_by_patient
+from datetime import datetime
 import secrets
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(16)  # Generate a random secret key for the session
-patient_names = [p['patient_name'] for p in get_all_patients()]
-
+app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
+patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
+patients = get_all_patients()
 
 @app.route('/')
 def root():
@@ -30,8 +32,16 @@ def dashboard():
 
 @app.route('/medications')
 def medications():
-    return render_template('medications.html', patient_names=patient_names)
+    my_patients = get_my_patients(session['pharmacist_id']) if patients else []
+    patient = my_patients[0] if my_patients else None
+    medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
 
+    return render_template('medications.html', patient_names=my_patients, medications=medication_list)
+
+@app.route('/get_medications/<int:patient_id>')
+def get_medications(patient_id):
+    medications_list = get_medications_by_patient(patient_id)
+    return jsonify(medications_list)
 
 @app.route('/schedule')
 def schedule():
@@ -64,6 +74,7 @@ def login():
             return render_template('login.html')
         else:
             session['email'] = email  # Store pharmacist's email in the session
+            session['pharmacist_id'] = user['pharmacist_id']
             return redirect(url_for('dashboard'))
 
     return render_template('login.html')
