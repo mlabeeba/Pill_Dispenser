@@ -58,4 +58,20 @@ def get_pharmacist_name_by_id(pharmacist_id):
         return response.data[0]['pharmacist_name']  # Extract the name
     return None  # Return None if no result
 
+def get_patients_for_pharmacist(email):
+    # Fetch pharmacist details using email
+    pharmacist = get_pharmacist_by_email(email)
+    if not pharmacist:
+        return []  # Return an empty list if no pharmacist is found
+
+    # Fetch patients associated with the pharmacist's ID
+    response = supabase.table('patients').select("*").eq("pharmacist_id", pharmacist['pharmacist_id']).execute()
+    return response.data if response.data else []
+
+def get_medications_for_patient(patient_name):
+    response = supabase.table('patients').select("medications(med_name, med_notes)").eq("patient_name", patient_name).execute()
+    if response.data:
+        return response.data[0].get('medications', [])
+    return []
+
 

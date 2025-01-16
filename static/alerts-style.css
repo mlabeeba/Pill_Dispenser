@@ -1,18 +1,25 @@
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+/* Patient Name Dropdown */
+.dropdown {
+    margin-top: 10px;
+    text-align: left;
 }
 
-/* Header */
+.dropdown select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
 h2 {
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* Dropdown */
+/* Dropdown Container */
 .dropdown-container {
     display: flex;
     align-items: center;
@@ -31,27 +38,33 @@ h2 {
     font-size: 14px;
 }
 
-/* Main Content */
-.main-content {
+/* Alert History */
+
+.alert-history ul {
+    list-style-type: none;
+    border: 1px solid #ccc;
+    padding-bottom: 400px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Main Content Container */
+.main-content-container {
     display: flex;
-    align-items: flex-start;
-    gap: 20px;
+    width: 100%;
 }
 
-/* Alerts Table */
-.alerts-table-container {
-    margin-bottom: 20px;
-    margin-left: 10px; /* Aligns with header and dropdown */
+.alert-table {
+    flex: auto;
 }
 
-.alerts-table-container h4 {
-    font-weight: bold;
-    margin: 0;
-    padding-bottom: 10px;
+.alert-history {
+    width: 250px;
+    margin-left: 40px;
 }
 
-.table-section {
-    display: flex;
+
+.alert-table, .alert-history {
     align-items: center;
 }
 
@@ -73,34 +86,4 @@ th {
 
 tr td {
     font-size: 14px;
-}
-
-/* Alert History */
-.alert-history {
-    position: absolute;
-    right: 50px;
-    top: 150px;
-    width: 200px;
-    padding-right: 40px;
-}
-
-.alert-history h4 {
-    font-weight: bold;
-    margin: 0;
-    padding-bottom: 10px;
-}
-
-.alert-history ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 4px;
-    background-color: #fff;
-}
-
-.alert-history li {
-    font-size: 14px;
-    padding: 5px 0;
 }

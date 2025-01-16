@@ -19,11 +19,12 @@
                 <label for="patient">Patient:</label>
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
-                        <option>{{ patient.name }}</option>
+                        <option>{{ patient.patient_name }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
+
 
         <div class="main-content">
             <div class="med-table-container">
@@ -47,14 +48,14 @@
                             <th>Notes</th>
                         </tr>
                         {% for med in medications %}
-                        <tr>
-                            <td>{{ med.medication_id }}</td>
-                            <td>{{ med.name }}</td>
-                            <td>{{ med.dosage }}</td>
-                            <td>{{ med.stock_level }}</td>
-                            <!-- <td>{{ med.schedule }}</td> -->
-                            <td>{{ med.notes }}</td>
-                        </tr>
+                            <tr>
+                                <td>{{ med.medication_id }}</td>
+                                <td>{{ med.name }}</td>
+                                <td>{{ med.dosage }}</td>
+                                <td>{{ med.stock_level }}</td>
+                                <!-- <td>{{ med.schedule }}</td> -->
+                                <td>{{ med.notes }}</td>
+                            </tr>
                         {% endfor %}
                     </table>
                 </div>

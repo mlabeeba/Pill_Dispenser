@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
-from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients
+from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_patients_for_pharmacist, get_medications_for_patient
+
 import secrets
 
 app = Flask(__name__)
@@ -30,8 +31,14 @@ def dashboard():
 
 @app.route('/medications')
 def medications():
-    return render_template('medications.html', patient_names=patient_names)
+    if 'email' not in session:
+        flash('Please log in to access medications.', 'warning')
+        return redirect(url_for('login'))
 
+    # Fetch patients for the logged-in pharmacist
+    patient_list = get_patients_for_pharmacist(session['email'])
+
+    return render_template('medications.html', patient_names=patient_list)
 
 @app.route('/schedule')
 def schedule():
@@ -90,6 +97,16 @@ def searchpatients():
 
     # Return the filtered list as JSON
     return jsonify(filtered_patients)
+
+@app.route('/fetch_medications', methods=['GET'])
+def fetch_medications():
+    patient_name = request.args.get('patient_name')
+
+    # Fetch medications for the selected patient
+    medications = get_medications_for_patient(patient_name)
+
+    return jsonify(medications)
+
 
 
 if __name__ == '__main__':
