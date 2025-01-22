@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
-    get_my_patients, get_medications_by_patient
-from datetime import datetime
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts
+from datetime import date
 import secrets
 
 app = Flask(__name__)
@@ -50,14 +50,28 @@ def schedule():
 
 @app.route('/alerts')
 def alerts():
-    return render_template('alerts.html', patient_names=patient_names)
+    my_patients = get_my_patients(session['pharmacist_id']) if patients else []
+    patient = my_patients[0] if my_patients else None
+    try:
+        alerts_data = get_all_alerts()
+        for alert in alerts_data:
+            # Ensure 'date' is a datetime.date object and convert it to string
+            if isinstance(alert['date'], date):
+                alert['date'] = alert['date'].strftime("%d-%m-%Y")
+    except Exception as e:
+        print(f"Error fetching or formatting alerts: {e}")
+        alerts_data = []
+    return render_template('alerts.html', alerts=alerts_data, patient_names=my_patients)
 
+@app.route('/get_alerts/<int:patient_id>')
+def get_alerts(patient_id):
+    alerts = get_alerts_by_patient(patient_id)
+    return jsonify(alerts)
 
 @app.route('/managepatients')
 def managepatients():
     patients = get_all_patients()
     return render_template('manage-patients.html', patients=patients)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -101,6 +115,22 @@ def searchpatients():
 
     # Return the filtered list as JSON
     return jsonify(filtered_patients)
+
+def format_datetime(value, format="%Y-%m-%d"):
+    """Format a datetime to a string in the specified format."""
+    if value is None:
+        return ""
+    try:
+        parsed_date = date.strptime(value, "%Y-%m-%dT%H:%M:%S")
+        return parsed_date.strftime(format)
+    except ValueError:
+        return "Invalid date format"
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
+
+
 
 
 if __name__ == '__main__':

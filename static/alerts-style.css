@@ -87,3 +87,8 @@ th {
 tr td {
     font-size: 14px;
 }
+
+li {
+    font-size: 14px;
+    padding-top: 10px;
+}

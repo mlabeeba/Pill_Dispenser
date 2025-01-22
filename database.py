@@ -1,9 +1,9 @@
-#imports
-from sqlalchemy import MetaData, create_engine, Column, Integer, String, Enum, DateTime, func, ForeignKey
-from sqlalchemy.orm import declarative_base, sessionmaker
+
 from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
+
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -46,7 +46,6 @@ def get_pharmacist_by_email(email):
         return response.data[0]  # Return the first pharmacist matching the email
     return None
 
-
 def get_pharmacist_name_by_id(pharmacist_id):
     # Query the Pharmacist table
     response = supabase.table('pharmacist').select('pharmacist_name').eq('pharmacist_id', pharmacist_id).execute()
@@ -65,3 +64,18 @@ def get_my_patients(pharmacist_id):
 def get_medications_by_patient(patient_id):
     response = supabase.table('medications').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else None
+
+def get_alerts_by_patient(patient_id):
+    response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
+    if response.status_code != 200:
+        print(f"Error status: {response.status_code}")
+        if response.error:
+            print(f"Error details: {response.error['message']}")
+        return []
+    print("Successfully retrieved alerts")
+    return response.data
+
+def get_all_alerts():
+    response = supabase.table('alerts').select("*").order('date', desc=True).execute()
+    return response.data
+

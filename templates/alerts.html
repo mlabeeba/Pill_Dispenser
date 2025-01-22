@@ -19,48 +19,109 @@
                 <label for="patient">Patient:</label>
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
-                        <option>{{ patient.patient_name }}</option>
+                        <option value="{{ patient['patient_id'] }}">{{ patient['patient_name'] }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
 
-        <div class = "main-content">
+        <div class="main-content">
             <div class="main-content-container">
 
-                <div class = alert-table>
+                <div class=alert-table>
                     <h3>Recent Alerts</h3>
                     <table>
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Type of Alert</th>
+                            <th>Acknowledge</th>
+                            <th>Notes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for alert in alerts %}
                             <tr>
-                                <th>#</th>
-                                <th>Date</th>
-                                <th>Type of Alert</th>
-                                <th>Acknowledge</th>
-                                <th>Notes</th>
+                                <td>{{ alert['alert_id'] }}</td>
+                                <td>{{ alert['date'] }}</td>
+                                <td>{{ alert['type'] }}</td>
+                                <td>{{ alert['acknowledge'] }}</td>
+                                <td>{{ alert['alert_notes'] }}</td>
                             </tr>
-                            {% for a in alerts %}
-                                <tr>
-                                    <td>{{ a.alert_id }}</td>
-                                    <td>{{ a.date }}</td>
-                                    <td>{{ a.type }}</td>
-                                    <td>{{ a.acknowledge }}</td>
-                                    <td>{{ a.alert_notes }}</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">No alerts found.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
 
                 </div>
 
-                <div class = alert-history>
+                <div class=alert-history>
                     <h3>Alert History</h3>
                     <ul>
-                        {% for a in alerts %}
-                            <li>{{ a.name }}</li>
+                        {% for alert in alerts %}
+                            <li>{{ alert['date'] }} - {{ alert['type'] }}</li>
+                        {% else %}
+                            <li>No alerts found in history.</li>
                         {% endfor %}
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        const patientDropdown = document.getElementById('patient');
+        const alertsTableBody = document.querySelector('.alert-table tbody');
+        const alertList = document.querySelector('.alert-history ul');
+
+        patientDropdown.addEventListener('change', function () {
+            const patientId = patientDropdown.value; // Get selected patient ID
+
+            // Fetch alerts for the selected patient
+            fetch(`/get_alerts/${patientId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing table rows and list items
+                    alertsTableBody.innerHTML = '';
+                    alertList.innerHTML = '';
+
+                    // Populate the table and list with new data
+                    if (data.length > 0) {
+                        data.forEach(alert => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>${alert.alert_id}</td>
+                            <td>${alert.date}</td>
+                            <td>${alert.type}</td>
+                            <td>${alert.acknowledge}</td>
+                            <td>${alert.alert_notes}</td>
+                        `;
+                            alertsTableBody.appendChild(row);
+
+                            const listItem = document.createElement('li');
+                            listItem.textContent = alert.name; // Assuming 'name' is a field in the alerts
+                            alertList.appendChild(listItem);
+                        });
+                    } else {
+                        // Show message if no results
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td colspan="5" style="text-align: center; color: gray;">
+                            No alerts found for the selected patient.
+                        </td>`;
+                        alertsTableBody.appendChild(row);
+
+                        const listItem = document.createElement('li');
+                        listItem.textContent = 'No alerts found for the selected patient.';
+                        alertList.appendChild(listItem);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
 
 {% endblock %}
