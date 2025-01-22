@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
 
-
-
 load_dotenv()  # Load environment variables from .env file
 
 # Supabase Configuration
@@ -65,15 +63,12 @@ def get_medications_by_patient(patient_id):
     response = supabase.table('medications').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else None
 
+
 def get_alerts_by_patient(patient_id):
     response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
-    if response.status_code != 200:
-        print(f"Error status: {response.status_code}")
-        if response.error:
-            print(f"Error details: {response.error['message']}")
-        return []
-    print("Successfully retrieved alerts")
-    return response.data
+    return response.data if response.data else []
+
+
 
 def get_all_alerts():
     response = supabase.table('alerts').select("*").order('date', desc=True).execute()
