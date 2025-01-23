@@ -35,7 +35,7 @@ label {
 
 .form-input {
     display: flex;
-    padding-bottom: 20px;
+    padding-bottom: 25px;
 }
 
 .popup-actions {
@@ -43,4 +43,19 @@ label {
     justify-content: space-between; /* Align buttons side by side */
     margin-top: 10px;
 }
+
+input {
+    width: 100%;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 15px;
+    box-sizing: border-box;
+    font-size: 15px;
+    padding: 10px;
+}
+
+h3 {
+    padding-bottom: 20px;
+}
+
 
