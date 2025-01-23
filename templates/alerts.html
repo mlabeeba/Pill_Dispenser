@@ -19,7 +19,7 @@
                 <label for="patient">Patient:</label>
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
-                        <option value="{{ patient['patient_id'] }}">{{ patient['patient_name'] }}</option>
+                        <option value="{{ patient.patient_id }}">{{ patient.patient_name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -40,14 +40,15 @@
                             <th>Notes</th>
                         </tr>
                         </thead>
-                        <tbody>
+
+                        <tbody id="alerts-table-body">
                         {% for alert in alerts %}
                             <tr>
-                                <td>{{ alert['alert_id'] }}</td>
-                                <td>{{ alert['date'] }}</td>
-                                <td>{{ alert['type'] }}</td>
-                                <td>{{ alert['acknowledge'] }}</td>
-                                <td>{{ alert['alert_notes'] }}</td>
+                                <td>{{ alert.alert_id }}</td>
+                                <td>{{ alert.date }}</td>
+                                <td>{{ alert.type }}</td>
+                                <td>{{ alert.acknowledge }}</td>
+                                <td>{{ alert.alert_notes }}</td>
                             </tr>
                         {% else %}
                             <tr>
@@ -59,9 +60,9 @@
 
                 </div>
 
-                <div class=alert-history>
+                <div class="alert-history">
                     <h3>Alert History</h3>
-                    <ul>
+                    <ul id="alert-history-list">
                         {% for alert in alerts %}
                             <li>{{ alert['date'] }} - {{ alert['type'] }}</li>
                         {% else %}
@@ -75,18 +76,19 @@
 
     <script>
         const patientDropdown = document.getElementById('patient');
-        const alertsTableBody = document.querySelector('.alert-table tbody');
-        const alertList = document.querySelector('.alert-history ul');
+        const tableBody = document.getElementById('alerts-table-body');
+        const alertList = document.getElementById('alert-history-list');
 
+        // Listen for change in the dropdown
         patientDropdown.addEventListener('change', function () {
             const patientId = patientDropdown.value; // Get selected patient ID
 
-            // Fetch alerts for the selected patient
+            // Send an AJAX request to the server
             fetch(`/get_alerts/${patientId}`)
                 .then(response => response.json())
                 .then(data => {
                     // Clear existing table rows and list items
-                    alertsTableBody.innerHTML = '';
+                    tableBody.innerHTML = '';
                     alertList.innerHTML = '';
 
                     // Populate the table and list with new data
@@ -100,10 +102,10 @@
                             <td>${alert.acknowledge}</td>
                             <td>${alert.alert_notes}</td>
                         `;
-                            alertsTableBody.appendChild(row);
+                            tableBody.appendChild(row);
 
                             const listItem = document.createElement('li');
-                            listItem.textContent = alert.name; // Assuming 'name' is a field in the alerts
+                            listItem.textContent = `${alert.date} - ${alert.type}`;
                             alertList.appendChild(listItem);
                         });
                     } else {
@@ -113,7 +115,7 @@
                         <td colspan="5" style="text-align: center; color: gray;">
                             No alerts found for the selected patient.
                         </td>`;
-                        alertsTableBody.appendChild(row);
+                        tableBody.appendChild(row);
 
                         const listItem = document.createElement('li');
                         listItem.textContent = 'No alerts found for the selected patient.';

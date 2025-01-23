@@ -9,6 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Manage Medications</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='med-style.css') }}">
+        <script src="{{ url_for('static', filename='popup.js') }}"></script>
     </head>
 
     <div class="container">
@@ -32,7 +33,7 @@
 
                     <div class="button-group">
                         <button type="button">Edit</button>
-                        <button type="button">Add</button>
+                        <button type="button" class="add-med-btn">Add</button>
                     </div>
                 </div>
 
@@ -47,7 +48,7 @@
                             <th>Notes</th>
                         </tr>
                         <tbody id="medications-table-body">
-                            {% for med in medications %}
+                        {% for med in medications %}
                             <tr>
                                 <td>{{ med.med_id }}</td>
                                 <td>{{ med.med_name }}</td>
@@ -56,7 +57,7 @@
                                 <!-- <td>{{ med.schedule }}</td> -->
                                 <td>{{ med.med_notes }}</td>
                             </tr>
-                            {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -64,7 +65,7 @@
 
             <div class="med-list">
                 <h4>Medication List</h4>
-                <ul id = "medications-list">
+                <ul id="medications-list">
                     {% for med in medications %}
                         <li>{{ med.med_name }}</li>
                     {% endfor %}
@@ -72,58 +73,63 @@
                 <button type="button" id="push-changes-btn">Push Changes to Device</button>
             </div>
         </div>
+
+        <div class="medication-popup">
+            <div class="medication-popup-content"></div>
+        </div>
+
     </div>
 
-<script>
-    const patientDropdown = document.getElementById('patient');
-    const tableBody = document.getElementById('medications-table-body');
-    const medList = document.getElementById('medications-list');
+    <script>
+        const patientDropdown = document.getElementById('patient');
+        const tableBody = document.getElementById('medications-table-body');
+        const medList = document.getElementById('medications-list');
 
-    // Listen for change in the dropdown
-    patientDropdown.addEventListener('change', function () {
-        const patientId = patientDropdown.value; // Get selected patient ID
+        // Listen for change in the dropdown
+        patientDropdown.addEventListener('change', function () {
+            const patientId = patientDropdown.value; // Get selected patient ID
 
-        // Send an AJAX request to the server
-        fetch(`/get_medications/${patientId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Clear existing table rows and list items
-                tableBody.innerHTML = '';
-                medList.innerHTML = '';
+            // Send an AJAX request to the server
+            fetch(`/get_medications/${patientId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing table rows and list items
+                    tableBody.innerHTML = '';
+                    medList.innerHTML = '';
 
-                // Populate the table and list with new data
-                if (data.length > 0) {
-                    data.forEach(med => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
+                    // Populate the table and list with new data
+                    if (data.length > 0) {
+                        data.forEach(med => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
                             <td>${med.med_id}</td>
                             <td>${med.med_name}</td>
                             <td>${med.dosage}</td>
                             <td>${med.stock_levels}</td>
                             <td>${med.med_notes}</td>
                         `;
-                        tableBody.appendChild(row);
+                            tableBody.appendChild(row);
 
-                        const listItem = document.createElement('li');
-                        listItem.textContent = med.med_name;
-                        medList.appendChild(listItem);
-                    });
-                } else {
-                    // Show message if no results
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                            const listItem = document.createElement('li');
+                            listItem.textContent = med.med_name;
+                            medList.appendChild(listItem);
+                        });
+                    } else {
+                        // Show message if no results
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                         <td colspan="5" style="text-align: center; color: gray;">
                             No medications found for the selected patient.
                         </td>`;
-                    tableBody.appendChild(row);
+                        tableBody.appendChild(row);
 
-                    const listItem = document.createElement('li');
-                    listItem.textContent = 'No medications found for the selected patient.';
-                    medList.appendChild(listItem);
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    });
-</script>
+                        const listItem = document.createElement('li');
+                        listItem.textContent = 'No medications found for the selected patient.';
+                        medList.appendChild(listItem);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
 
 {% endblock %}

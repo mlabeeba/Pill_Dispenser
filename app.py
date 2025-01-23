@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
     get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts
@@ -20,7 +21,9 @@ def dashboard():
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
-    # Fetch pharmacist name from the database using email
+    patient_names = [name[0] for name in get_all_patient_names()]
+    my_patients = get_all_patients()  # This should probably be a function that filters patients by pharmacist or something similar
+
     user = get_pharmacist_by_email(session['email'])
     if user is None:
         flash('Error fetching pharmacist details.', 'danger')
@@ -32,6 +35,10 @@ def dashboard():
 
 @app.route('/medications')
 def medications():
+    if 'email' not in session:
+        flash('Please log in to access the dashboard.', 'warning')
+        return redirect(url_for('login'))
+
     my_patients = get_my_patients(session['pharmacist_id']) if patients else []
     patient = my_patients[0] if my_patients else None
     medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
@@ -47,26 +54,35 @@ def get_medications(patient_id):
 def schedule():
     return render_template('schedule.html')
 
-
 @app.route('/alerts')
 def alerts():
+    if 'email' not in session:
+        flash('Please log in to access the dashboard.', 'warning')
+        return redirect(url_for('login'))
+
+    # Assuming you have a function to get all patients assigned to a pharmacist
+    # Modify according to your actual function and data structure
+    my_patients = get_all_patients()  # This function should return all relevant patient data
+    selected_patient_id = request.args.get('patient_id', type=int)
+
+    alerts_data = []
+    if selected_patient_id:
+        alerts_data = get_alerts_by_patient(selected_patient_id)
+
+    # Format alerts data if needed
+    for alert in alerts_data:
+        alert['date'] = alert['date'].strftime("%Y-%m-%d") if isinstance(alert['date'], date) else alert['date']
+
     my_patients = get_my_patients(session['pharmacist_id']) if patients else []
     patient = my_patients[0] if my_patients else None
-    try:
-        alerts_data = get_all_alerts()
-        for alert in alerts_data:
-            # Ensure 'date' is a datetime.date object and convert it to string
-            if isinstance(alert['date'], date):
-                alert['date'] = alert['date'].strftime("%d-%m-%Y")
-    except Exception as e:
-        print(f"Error fetching or formatting alerts: {e}")
-        alerts_data = []
-    return render_template('alerts.html', alerts=alerts_data, patient_names=my_patients)
+    alert_list = get_alerts_by_patient(patient['patient_id']) if patient else []
+
+    return render_template('alerts.html', patient_names=my_patients, alerts=alert_list)
 
 @app.route('/get_alerts/<int:patient_id>')
 def get_alerts(patient_id):
-    alerts = get_alerts_by_patient(patient_id)
-    return jsonify(alerts)
+    alert_list = get_alerts_by_patient(patient_id)
+    return jsonify(alert_list)
 
 @app.route('/managepatients')
 def managepatients():
@@ -93,12 +109,10 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
     session.clear()  # Clear the session
     return render_template('logout.html')
-
 
 @app.route('/searchpatients')
 def searchpatients():
@@ -116,6 +130,8 @@ def searchpatients():
     # Return the filtered list as JSON
     return jsonify(filtered_patients)
 
+
+
 def format_datetime(value, format="%Y-%m-%d"):
     """Format a datetime to a string in the specified format."""
     if value is None:
@@ -128,10 +144,9 @@ def format_datetime(value, format="%Y-%m-%d"):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
-
-
-
-
+@app.route('/add-med')
+def add_med():
+    return render_template('add-med.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
