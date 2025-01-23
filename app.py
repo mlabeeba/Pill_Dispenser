@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
-    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, get_pharmacist_by_email
 from datetime import date
 import secrets
 
@@ -13,7 +13,6 @@ patients = get_all_patients()
 @app.route('/')
 def root():
     return redirect(url_for('login'))
-
 
 @app.route('/dashboard')
 def dashboard():
@@ -53,6 +52,27 @@ def get_medications(patient_id):
 @app.route('/schedule')
 def schedule():
     return render_template('schedule.html')
+
+@app.route('/myprofile')
+def myprofile():
+    if 'email' not in session:
+        flash('Please log in to access the dashboard.', 'warning')
+        return redirect(url_for('login'))
+
+    user = get_pharmacist_by_email(session['email'])
+    if user is None:
+        flash('Error fetching pharmacist details.', 'danger')
+        return redirect(url_for('login'))
+
+    pharmacist_id = user.get('pharmacist_id')
+    my_patients = get_my_patients(pharmacist_id)
+    total_patients = len(my_patients)  # Count the number of patients
+
+    pharmacist_name = user.get('pharmacist_name', 'Pharmacist')
+    pharmacist_email = user.get('email', '<EMAIL>')
+
+    return render_template('myprofile.html', pharmacist_name=pharmacist_name,
+                           pharmacist_email=pharmacist_email, total_patients=total_patients)
 
 @app.route('/alerts')
 def alerts():
@@ -112,7 +132,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()  # Clear the session
-    return render_template('logout.html')
+    return render_template('login.html')
 
 @app.route('/searchpatients')
 def searchpatients():

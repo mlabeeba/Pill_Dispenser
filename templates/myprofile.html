@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Profile</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='profile-style.css') }}">
+    </head>
+
+    <div class=container>
+
+        <div class="profile-tite">
+            <h1> My Profile </h1>
+        </div>
+
+        <div class="pharmacist-card">
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/user.png') }}" alt="myprofile-pic">
+            </div>
+
+            <div class="card" id="pharmacist-info">
+                <p class="pharmacist-name"> <strong>Name:</strong> {{ pharmacist_name }}</p>
+                <p class="pharmacist-email"> <strong>Email:</strong> {{ pharmacist_email }}</p>
+                <p class="patient-num"> <strong>Total Number of Patients:</strong> {{ total_patients }}</p>
+            </div>
+
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="reset-password">Reset Password</button>
+            <button type="button" class="edit-profile">Edit</button>
+        </div>
+    </div>
+
+{% endblock %}
