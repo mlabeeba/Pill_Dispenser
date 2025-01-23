@@ -68,9 +68,9 @@ def get_alerts_by_patient(patient_id):
     response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else []
 
-
-
 def get_all_alerts():
     response = supabase.table('alerts').select("*").order('date', desc=True).execute()
     return response.data
+
+
 
