@@ -159,13 +159,27 @@
                         isEditing = false;
                         editButton.textContent = 'Edit';
                         applyEditableState();
+
+                        // Clear and update the medications list
+                        medList.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(med => {
+                                const listItem = document.createElement('li');
+                                listItem.textContent = med.med_name;
+                                medList.appendChild(listItem);
+                            });
+                        } else {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = 'No medications found for the selected patient.';
+                            medList.appendChild(listItem);
+                        }
                     })
+
                     .catch(error => {
                         console.error('Error fetching data:', error);
                     });
             });
         });
     </script>
-
-
 {% endblock %}
+
