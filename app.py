@@ -35,6 +35,10 @@ def dashboard():
 
 @app.route('/medications')
 def medications():
+    if 'email' not in session:
+        flash('Please log in to access the dashboard.', 'warning')
+        return redirect(url_for('login'))
+
     my_patients = get_my_patients(session['pharmacist_id']) if patients else []
     patient = my_patients[0] if my_patients else None
     medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
@@ -49,7 +53,6 @@ def get_medications(patient_id):
 @app.route('/schedule')
 def schedule():
     return render_template('schedule.html')
-
 
 @app.route('/alerts')
 def alerts():
@@ -75,7 +78,6 @@ def alerts():
     alert_list = get_alerts_by_patient(patient['patient_id']) if patient else []
 
     return render_template('alerts.html', patient_names=my_patients, alerts=alert_list)
-
 
 @app.route('/get_alerts/<int:patient_id>')
 def get_alerts(patient_id):
@@ -107,12 +109,10 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
     session.clear()  # Clear the session
     return render_template('logout.html')
-
 
 @app.route('/searchpatients')
 def searchpatients():
@@ -130,6 +130,8 @@ def searchpatients():
     # Return the filtered list as JSON
     return jsonify(filtered_patients)
 
+
+
 def format_datetime(value, format="%Y-%m-%d"):
     """Format a datetime to a string in the specified format."""
     if value is None:
@@ -142,8 +144,9 @@ def format_datetime(value, format="%Y-%m-%d"):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
-
-
+@app.route('/add-med')
+def add_med():
+    return render_template('add-med.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

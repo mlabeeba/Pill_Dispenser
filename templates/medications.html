@@ -9,6 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Manage Medications</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='med-style.css') }}">
+        <script src="{{ url_for('static', filename='popup.js') }}"></script>
     </head>
 
     <div class="container">
@@ -32,7 +33,7 @@
 
                     <div class="button-group">
                         <button type="button">Edit</button>
-                        <button type="button">Add</button>
+                        <button type="button" class="add-med-btn">Add</button>
                     </div>
                 </div>
 
@@ -72,6 +73,11 @@
                 <button type="button" id="push-changes-btn">Push Changes to Device</button>
             </div>
         </div>
+
+        <div class="medication-popup">
+            <div class="medication-popup-content"></div>
+        </div>
+
     </div>
 
     <script>
