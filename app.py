@@ -1,14 +1,13 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
-from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
-    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, get_pharmacist_by_email
+from database import get_pharmacist_by_email, get_all_patient_names, get_pharmacist_name_by_id, \
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, add_medication, get_pharmacist_by_email
 from datetime import date
 import secrets
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
 patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
-patients = get_all_patients()
 
 @app.route('/')
 def root():
@@ -21,7 +20,7 @@ def dashboard():
         return redirect(url_for('login'))
 
     patient_names = [name[0] for name in get_all_patient_names()]
-    my_patients = get_all_patients()  # This should probably be a function that filters patients by pharmacist or something similar
+    #my_patients = get_all_patients()  # This should probably be a function that filters patients by pharmacist or something similar
 
     user = get_pharmacist_by_email(session['email'])
     if user is None:
@@ -32,20 +31,33 @@ def dashboard():
     return render_template('dashboard.html', pharmacist_name=pharmacist_name, patient_names=patient_names)
 
 
-@app.route('/medications')
+@app.route('/medications', methods=['GET', 'POST'])
 def medications():
     if 'email' not in session:
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
-    my_patients = get_my_patients(session['pharmacist_id']) if patients else []
-    patient = my_patients[0] if my_patients else None
-    medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
+    if request.method == 'GET':
+        my_patients = get_my_patients(session['pharmacist_id'])
+        patient = my_patients[0] if my_patients else None
+        medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
+        session['current_patient_id'] = patient['patient_id']
 
-    return render_template('medications.html', patient_names=my_patients, medications=medication_list)
+    if request.method == 'POST':
+        med_name = request.form['medicationName']
+        dosage = request.form['dosage']
+        stock = request.form['stock']
+        notes = request.form['notes']
+        add_medication(med_name, dosage, stock, session['current_patient_id'], session['pharmacist_id'], notes)
+
+        my_patients = get_my_patients(session['pharmacist_id'])
+        medication_list = get_medications_by_patient(session['current_patient_id'])
+
+    return render_template('medications.html', patient_names=my_patients, medications=medication_list, current_patient_id = session['current_patient_id'])
 
 @app.route('/get_medications/<int:patient_id>')
 def get_medications(patient_id):
+    session['current_patient_id'] = patient_id
     medications_list = get_medications_by_patient(patient_id)
     return jsonify(medications_list)
 
@@ -82,7 +94,7 @@ def alerts():
 
     # Assuming you have a function to get all patients assigned to a pharmacist
     # Modify according to your actual function and data structure
-    my_patients = get_all_patients()  # This function should return all relevant patient data
+    #my_patients = get_all_patients()  # This function should return all relevant patient data
     selected_patient_id = request.args.get('patient_id', type=int)
 
     alerts_data = []
@@ -93,7 +105,7 @@ def alerts():
     for alert in alerts_data:
         alert['date'] = alert['date'].strftime("%Y-%m-%d") if isinstance(alert['date'], date) else alert['date']
 
-    my_patients = get_my_patients(session['pharmacist_id']) if patients else []
+    my_patients = get_my_patients(session['pharmacist_id'])
     patient = my_patients[0] if my_patients else None
     alert_list = get_alerts_by_patient(patient['patient_id']) if patient else []
 
@@ -106,7 +118,7 @@ def get_alerts(patient_id):
 
 @app.route('/managepatients')
 def managepatients():
-    patients = get_all_patients()
+    patients = get_my_patients(session['pharmacist_id'])
     return render_template('manage-patients.html', patients=patients)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -139,7 +151,7 @@ def searchpatients():
     search_term = request.args.get('search', '').lower()
 
     # Fetch all patients
-    all_patients = get_all_patients()
+    all_patients = get_my_patients(session['pharmacist_id'])
 
     # Filter patients based on search term
     filtered_patients = [
@@ -167,7 +179,6 @@ app.jinja_env.filters['datetime'] = format_datetime
 @app.route('/add-med')
 def add_med():
     return render_template('add-med.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

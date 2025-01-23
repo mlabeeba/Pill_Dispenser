@@ -1,3 +1,4 @@
+
 // Add an event listener for the "Add" button
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("add-med-btn")) {
@@ -27,7 +28,7 @@ function loadMedicationForm() {
             // Add event listener for the form submission
             const medicationForm = document.getElementById("medicationForm");
             medicationForm.addEventListener("submit", (event) => {
-                event.preventDefault();
+                //event.preventDefault();
                 toggleMedicationPopup();
                 alert("Medication scheduled successfully!");
             });
