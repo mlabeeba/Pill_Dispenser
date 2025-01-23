@@ -32,7 +32,7 @@
                     <h4>Current Rotation</h4>
 
                     <div class="button-group">
-                        <button type="button">Edit</button>
+                        <button type="button" id="editButton" onclick="toggleEdit()">Edit</button>
                         <button type="button" class="add-med-btn">Add</button>
                     </div>
                 </div>
@@ -51,11 +51,10 @@
                         {% for med in medications %}
                             <tr>
                                 <td>{{ med.med_id }}</td>
-                                <td>{{ med.med_name }}</td>
-                                <td>{{ med.dosage }}</td>
-                                <td>{{ med.stock_levels }}</td>
-                                <!-- <td>{{ med.schedule }}</td> -->
-                                <td>{{ med.med_notes }}</td>
+                                <td contenteditable="false" class="editable">{{ med.med_name }}</td>
+                                <td contenteditable="false" class="editable">{{ med.dosage }}</td>
+                                <td contenteditable="false" class="editable">{{ med.stock_levels }}</td>
+                                <td contenteditable="false" class="editable">{{ med.med_notes }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -129,6 +128,72 @@
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
+        });
+
+        patientDropdown.addEventListener('change', function () {
+            // Explicitly reset editing state and button text when changing patients
+            editing = false;  // Assuming 'editing' is a global variable managed in 'edit-med.js'
+            document.getElementById('editButton').textContent = 'Edit';
+            makeCellsEditable(); // Reset editable state of cells, assuming this function is defined in 'edit-med.js'
+
+            fetch(`/get_medications/${this.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Your existing logic for updating the table and list
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    // Ensure UI consistency even in case of fetch failure
+                    document.getElementById('editButton').textContent = 'Edit';
+                });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let isEditing = false; // This flag controls whether editing is enabled
+
+            // Function to toggle the editable state of table cells
+            function applyEditableState() {
+                const editableCells = document.querySelectorAll('.editable');
+                editableCells.forEach(cell => {
+                    cell.contentEditable = isEditing; // Set based on isEditing flag
+                });
+            }
+
+            // Toggle edit mode when the edit button is clicked
+            document.getElementById('editButton').addEventListener('click', function () {
+                isEditing = !isEditing; // Toggle the editing state
+                this.textContent = isEditing ? 'Save' : 'Edit'; // Update button text
+                applyEditableState(); // Apply the current editable state to the table cells
+            });
+
+            // Load new data when a patient is selected
+            document.getElementById('patient').addEventListener('change', function () {
+                fetch(`/get_medications/${this.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('medications-table-body');
+                        tableBody.innerHTML = ''; // Clear existing data
+
+                        // Populate the table with new data
+                        data.forEach(med => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                    <td>${med.med_id}</td>
+                    <td class="editable">${med.med_name}</td>
+                    <td class="editable">${med.dosage}</td>
+                    <td class="editable">${med.stock_levels}</td>
+                    <td class="editable">${med.med_notes}</td>
+                `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Re-apply the editable state in case the edit mode is currently active
+                        if (isEditing) {
+                            applyEditableState();
+                        }
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            });
         });
     </script>
 
