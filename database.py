@@ -16,12 +16,11 @@ def get_all_patients():
         .select('patient_name, age, dob, medications(med_name, med_notes)') \
         .execute()
 
-    # Process data to flatten structure
     patients = []
     for patient in response.data:
         medications = patient.get('medications', [])
-        med_names = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
-        med_notes = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
+        med_names = ', '.join([med['med_name'] for med in medications if med['med_name']]) if medications else 'N/A'
+        med_notes = ', '.join([str(med['med_notes']) if med['med_notes'] is not None else '' for med in medications])
 
         patients.append({
             'patient_name': patient['patient_name'],
@@ -31,6 +30,7 @@ def get_all_patients():
             'notes': med_notes
         })
     return patients
+
 
 # Fetch patient names
 def get_all_patient_names():
