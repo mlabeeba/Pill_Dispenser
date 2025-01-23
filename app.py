@@ -1,7 +1,8 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_all_patients, get_pharmacist_name_by_id, \
-    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, get_pharmacist_by_email
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, get_pharmacist_by_email, \
+    supabase
 from datetime import date
 import secrets
 
@@ -167,6 +168,29 @@ app.jinja_env.filters['datetime'] = format_datetime
 @app.route('/add-med')
 def add_med():
     return render_template('add-med.html')
+
+
+@app.route('/update_medications', methods=['POST'])
+def update_medications():
+    data = request.json
+    results = []
+    for med in data:
+        response = supabase.table('medications').update({
+            'med_name': med['med_name'],
+            'dosage': med['dosage'],
+            'stock_levels': med['stock_levels'],
+            'med_notes': med['med_notes']
+        }).eq('med_id', med['med_id']).execute()
+
+        # Check if there is an error in the response
+        if 'error' in response:
+            print(f"Error updating medication {med['med_id']}: {response['error']['message']}")
+            results.append({'med_id': med['med_id'], 'status': 'failed', 'error': response['error']['message']})
+        else:
+            results.append({'med_id': med['med_id'], 'status': 'success'})
+
+    return jsonify({'success': True, 'results': results})
+
 
 
 if __name__ == '__main__':

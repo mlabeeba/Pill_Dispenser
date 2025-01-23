@@ -80,121 +80,90 @@
     </div>
 
     <script>
-        const patientDropdown = document.getElementById('patient');
-        const tableBody = document.getElementById('medications-table-body');
-        const medList = document.getElementById('medications-list');
-
-        // Listen for change in the dropdown
-        patientDropdown.addEventListener('change', function () {
-            const patientId = patientDropdown.value; // Get selected patient ID
-
-            // Send an AJAX request to the server
-            fetch(`/get_medications/${patientId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Clear existing table rows and list items
-                    tableBody.innerHTML = '';
-                    medList.innerHTML = '';
-
-                    // Populate the table and list with new data
-                    if (data.length > 0) {
-                        data.forEach(med => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                            <td>${med.med_id}</td>
-                            <td>${med.med_name}</td>
-                            <td>${med.dosage}</td>
-                            <td>${med.stock_levels}</td>
-                            <td>${med.med_notes}</td>
-                        `;
-                            tableBody.appendChild(row);
-
-                            const listItem = document.createElement('li');
-                            listItem.textContent = med.med_name;
-                            medList.appendChild(listItem);
-                        });
-                    } else {
-                        // Show message if no results
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                        <td colspan="5" style="text-align: center; color: gray;">
-                            No medications found for the selected patient.
-                        </td>`;
-                        tableBody.appendChild(row);
-
-                        const listItem = document.createElement('li');
-                        listItem.textContent = 'No medications found for the selected patient.';
-                        medList.appendChild(listItem);
-                    }
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
-
-        patientDropdown.addEventListener('change', function () {
-            // Explicitly reset editing state and button text when changing patients
-            editing = false;  // Assuming 'editing' is a global variable managed in 'edit-med.js'
-            document.getElementById('editButton').textContent = 'Edit';
-            makeCellsEditable(); // Reset editable state of cells, assuming this function is defined in 'edit-med.js'
-
-            fetch(`/get_medications/${this.value}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Your existing logic for updating the table and list
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    // Ensure UI consistency even in case of fetch failure
-                    document.getElementById('editButton').textContent = 'Edit';
-                });
-        });
-
         document.addEventListener('DOMContentLoaded', function () {
-            let isEditing = false; // This flag controls whether editing is enabled
+            const patientDropdown = document.getElementById('patient');
+            const tableBody = document.getElementById('medications-table-body');
+            const medList = document.getElementById('medications-list');
+            const editButton = document.getElementById('editButton');
+            let isEditing = false;  // This flag controls whether editing is enabled
 
-            // Function to toggle the editable state of table cells
             function applyEditableState() {
                 const editableCells = document.querySelectorAll('.editable');
                 editableCells.forEach(cell => {
-                    cell.contentEditable = isEditing; // Set based on isEditing flag
+                    cell.contentEditable = isEditing;
                 });
             }
 
-            // Toggle edit mode when the edit button is clicked
-            document.getElementById('editButton').addEventListener('click', function () {
-                isEditing = !isEditing; // Toggle the editing state
-                this.textContent = isEditing ? 'Save' : 'Edit'; // Update button text
-                applyEditableState(); // Apply the current editable state to the table cells
+            function saveChanges() {
+                const data = [];
+                const rows = document.querySelectorAll('#medications-table-body tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td.editable');
+                    data.push({
+                        med_id: row.cells[0].textContent,
+                        med_name: cells[0].textContent,
+                        dosage: cells[1].textContent,
+                        stock_levels: cells[2].textContent,
+                        med_notes: cells[3].textContent
+                    });
+                });
+
+                fetch('/update_medications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log('Success:', result);
+                        alert('Updates saved successfully!');
+                        isEditing = false;
+                        editButton.textContent = 'Edit';
+                        applyEditableState();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error saving updates.');
+                    });
+            }
+
+            editButton.addEventListener('click', function () {
+                if (isEditing) {
+                    saveChanges();  // Save changes when the button is in "Save" mode
+                } else {
+                    isEditing = true; // Enable editing
+                    this.textContent = 'Save'; // Change button text to "Save"
+                    applyEditableState(); // Make cells editable
+                }
             });
 
-            // Load new data when a patient is selected
-            document.getElementById('patient').addEventListener('change', function () {
-                fetch(`/get_medications/${this.value}`)
+            patientDropdown.addEventListener('change', function () {
+                const patientId = this.value;
+                fetch(`/get_medications/${patientId}`)
                     .then(response => response.json())
                     .then(data => {
-                        const tableBody = document.getElementById('medications-table-body');
-                        tableBody.innerHTML = ''; // Clear existing data
-
-                        // Populate the table with new data
-                        data.forEach(med => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                    <td>${med.med_id}</td>
-                    <td class="editable">${med.med_name}</td>
-                    <td class="editable">${med.dosage}</td>
-                    <td class="editable">${med.stock_levels}</td>
-                    <td class="editable">${med.med_notes}</td>
-                `;
-                            tableBody.appendChild(row);
-                        });
-
-                        // Re-apply the editable state in case the edit mode is currently active
-                        if (isEditing) {
-                            applyEditableState();
+                        tableBody.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(med => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `<td>${med.med_id}</td><td class="editable">${med.med_name}</td><td class="editable">${med.dosage}</td><td class="editable">${med.stock_levels}</td><td class="editable">${med.med_notes}</td>`;
+                                tableBody.appendChild(row);
+                            });
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">No medications found for the selected patient.</td></tr>';
                         }
+                        isEditing = false;
+                        editButton.textContent = 'Edit';
+                        applyEditableState();
                     })
-                    .catch(error => console.error('Error fetching data:', error));
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
             });
         });
     </script>
+
 
 {% endblock %}
