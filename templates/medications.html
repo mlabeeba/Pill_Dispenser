@@ -133,11 +133,11 @@
 
             editButton.addEventListener('click', function () {
                 if (isEditing) {
-                    saveChanges();  // Save changes when the button is in "Save" mode
+                    saveChanges();
                 } else {
-                    isEditing = true; // Enable editing
-                    this.textContent = 'Save'; // Change button text to "Save"
-                    applyEditableState(); // Make cells editable
+                    isEditing = true;
+                    this.textContent = 'Save';
+                    applyEditableState();
                 }
             });
 
@@ -160,7 +160,6 @@
                         editButton.textContent = 'Edit';
                         applyEditableState();
 
-                        // Clear and update the medications list
                         medList.innerHTML = '';
                         if (data.length > 0) {
                             data.forEach(med => {

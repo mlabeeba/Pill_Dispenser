@@ -1,4 +1,3 @@
-
 from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
@@ -11,31 +10,33 @@ supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 supabase: Client = create_client(supabase_url, supabase_key)
 
 # # Fetch all patients
-# def get_all_patients():
-#     response = supabase.table('patients') \
-#         .select('patient_name, age, dob, medications(med_name, med_notes)') \
-#         .execute()
-#
-#     # Process data to flatten structure
-#     patients = []
-#     for patient in response.data:
-#         medications = patient.get('medications', [])
-#         med_names = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
-#         med_notes = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
-#
-#         patients.append({
-#             'patient_name': patient['patient_name'],
-#             'age': patient['age'],
-#             'dob': patient['dob'],
-#             'medications': med_names,
-#             'notes': med_notes
-#         })
-#     return patients
+def get_all_patients():
+    response = supabase.table('patients') \
+        .select('patient_name, age, dob, medications(med_name, med_notes)') \
+        .execute()
+
+    # Process data to flatten structure
+    patients = []
+    for patient in response.data:
+        medications = patient.get('medications', [])
+        med_names = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
+        med_notes = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
+
+        patients.append({
+            'patient_name': patient['patient_name'],
+            'age': patient['age'],
+            'dob': patient['dob'],
+            'medications': med_names,
+            'notes': med_notes
+        })
+    return patients
+
 
 # Fetch patient names
 def get_all_patient_names():
     response = supabase.table('patients').select("patient_name").execute()
     return [row['patient_name'] for row in response.data]
+
 
 # Fetch pharmacist by email
 def get_pharmacist_by_email(email):
@@ -43,6 +44,7 @@ def get_pharmacist_by_email(email):
     if response.data:
         return response.data[0]  # Return the first pharmacist matching the email
     return None
+
 
 def get_pharmacist_name_by_id(pharmacist_id):
     # Query the Pharmacist table
@@ -53,23 +55,28 @@ def get_pharmacist_name_by_id(pharmacist_id):
         return response.data[0]['pharmacist_name']  # Extract the name
     return None  # Return None if no result
 
-#Fetch pharmacist specific patients
+
+# Fetch pharmacist specific patients
 def get_my_patients(pharmacist_id):
     response = supabase.table('patients').select('*').eq('pharmacist_id', pharmacist_id).execute()
     return response.data if response.data else None
 
-#Fetch patient medications
+
+# Fetch patient medications
 def get_medications_by_patient(patient_id):
     response = supabase.table('medications').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else None
+
 
 def get_alerts_by_patient(patient_id):
     response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else []
 
+
 def get_all_alerts():
     response = supabase.table('alerts').select("*").order('date', desc=True).execute()
     return response.data
+
 
 # add medications to database
 def add_medication(med_name, dosage, stock, patient_id, pharmacist_id, med_notes=None):
@@ -85,5 +92,3 @@ def add_medication(med_name, dosage, stock, patient_id, pharmacist_id, med_notes
 
     response = supabase.table('medications').insert(data).execute()
     return response
-
-

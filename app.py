@@ -118,8 +118,28 @@ def get_alerts(patient_id):
 
 @app.route('/managepatients')
 def managepatients():
-    patients = get_my_patients(session['pharmacist_id'])
+    pharmacist_id = session.get('pharmacist_id')
+    if pharmacist_id:
+        patients = get_my_patients(pharmacist_id)
+    else:
+        flash('You must be logged in to view this page.', 'warning')
+        return redirect(url_for('login'))
+
+    # Make sure each patient has medication and note data
+    for patient in patients:
+        # Use the correct key for patient ID here, e.g., 'patient_id'
+        patient_id = patient.get('patient_id')  # Assuming the key is 'patient_id'
+        if patient_id:
+            medications = get_medications_by_patient(patient_id)
+            patient['medications'] = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
+            patient['notes'] = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
+        else:
+            patient['medications'] = 'N/A'
+            patient['notes'] = 'N/A'
+
     return render_template('manage-patients.html', patients=patients)
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -149,18 +169,20 @@ def logout():
 @app.route('/searchpatients')
 def searchpatients():
     search_term = request.args.get('search', '').lower()
+    pharmacist_id = session.get('pharmacist_id')
+    all_patients = get_my_patients(pharmacist_id)  # Assuming this fetches all necessary data
 
-    # Fetch all patients
-    all_patients = get_my_patients(session['pharmacist_id'])
+    filtered_patients = [patient for patient in all_patients if search_term in patient['patient_name'].lower()]
 
-    # Filter patients based on search term
-    filtered_patients = [
-        p for p in all_patients
-        if search_term in p['patient_name'].lower()
-    ]
+    # Make sure to fetch and attach medications and notes to each filtered patient
+    for patient in filtered_patients:
+        patient_id = patient['patient_id']
+        medications = get_medications_by_patient(patient_id)
+        patient['medications'] = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
+        patient['notes'] = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
 
-    # Return the filtered list as JSON
     return jsonify(filtered_patients)
+
 
 
 

@@ -53,18 +53,13 @@
         const searchInput = document.getElementById('searchPatient');
         const tableBody = document.getElementById('patientsTableBody');
 
-        // Listen for input in the search bar
         searchInput.addEventListener('input', function () {
-            const searchTerm = searchInput.value.trim(); // Get input value
+            const searchTerm = searchInput.value.trim();
 
-            // Send an AJAX request to the server
             fetch(`/searchpatients?search=${searchTerm}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Clear existing table rows
                     tableBody.innerHTML = '';
-
-                    // Populate the table with new data
                     if (data.length > 0) {
                         data.forEach(patient => {
                             const row = document.createElement('tr');
@@ -78,17 +73,17 @@
                             tableBody.appendChild(row);
                         });
                     } else {
-                        // Show message if no results
                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                    <td colspan="5" style="text-align: center; color: gray;">
-                        No matching patients found.
-                    </td>`;
+                        row.innerHTML = `<td colspan="5" style="text-align: center; color: gray;">No matching patients found.</td>`;
                         tableBody.appendChild(row);
                     }
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error fetching data</td></tr>`;
+                });
         });
+
 
     </script>
 
