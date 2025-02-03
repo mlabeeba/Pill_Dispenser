@@ -1,7 +1,8 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_pharmacist_name_by_id, \
-    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, add_medication, get_pharmacist_by_email, supabase
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, add_medication, \
+    get_pharmacist_by_email, supabase, login_by_password
 from datetime import date
 import secrets
 
@@ -76,8 +77,7 @@ def myprofile():
         flash('Error fetching pharmacist details.', 'danger')
         return redirect(url_for('login'))
 
-    pharmacist_id = user.get('pharmacist_id')
-    my_patients = get_my_patients(pharmacist_id)
+    my_patients = get_my_patients(session['pharmacist_id'])
     total_patients = len(my_patients)  # Count the number of patients
 
     pharmacist_name = user.get('pharmacist_name', 'Pharmacist')
@@ -147,17 +147,18 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        user = get_pharmacist_by_email(email)
-        if user is None:
-            flash('Invalid email. Please try again.', 'danger')
-            return render_template('login.html')
-        elif user['password'] != password:
-            flash('Invalid password. Please try again.', 'danger')
-            return render_template('login.html')
-        else:
-            session['email'] = email  # Store pharmacist's email in the session
-            session['pharmacist_id'] = user['pharmacist_id']
+        try:
+            response = login_by_password(email, password)
+            if 'error' in response:
+                flash(response['error']['message'], 'danger')
+                return render_template('login.html')
+
+            session['email'] = response.user.email  # Store pharmacist's email in the session
+            session['pharmacist_id'] = response.user.id  # Store pharmacist's ID in the session
             return redirect(url_for('dashboard'))
+        except Exception as e:
+            flash(str(e), 'danger')
+            return render_template('login.html')
 
     return render_template('login.html')
 
@@ -182,9 +183,6 @@ def searchpatients():
         patient['notes'] = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
 
     return jsonify(filtered_patients)
-
-
-
 
 def format_datetime(value, format="%Y-%m-%d"):
     """Format a datetime to a string in the specified format."""
