@@ -91,3 +91,13 @@ def add_pharmacist(pharmacist_name, email, password):
     }
     response = supabase.table('pharmacist').insert(data).execute()
     return response
+
+def check_user_exists(email):
+    # Function to check if user already exists in the database
+    # This is a placeholder function
+    pass
+
+def create_new_user(name, email, password):
+    # Function to add a new user to the database
+    # This is a placeholder function
+    pass

@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from database import get_pharmacist_by_email, get_all_patient_names, get_pharmacist_name_by_id, \
     get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, add_medication, \
-    get_pharmacist_by_email, supabase, login_by_password
+    get_pharmacist_by_email, supabase, login_by_password, check_user_exists, create_new_user
 from datetime import date
 import secrets
 
@@ -222,7 +222,26 @@ def update_medications():
 
     return jsonify({'success': True, 'results': results})
 
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if request.method == 'POST':
+        # Extract form data
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
+        # Here, you'd include your logic to check if the user already exists and handle user creation
+        user_exists = check_user_exists(email)  # Implement this function to check if user already exists
+        if user_exists:
+            flash('Email already registered. Please login or use another email.', 'error')
+            return redirect(url_for('create_account'))
+        else:
+            # Function to add a new user to the database
+            create_new_user(name, email, password)  # Implement this function to create a new user
+            flash('Account created successfully! Please login.', 'success')
+            return redirect(url_for('login'))
+    # If GET request or no form submission, render the account creation form
+    return render_template('create-account.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
