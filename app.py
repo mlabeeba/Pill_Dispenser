@@ -1,12 +1,10 @@
 
-import secrets
-from datetime import date
-
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
-
-from database import get_all_patient_names, get_my_patients, get_medications_by_patient, get_alerts_by_patient, \
-    add_medication, \
-    get_pharmacist_by_email, supabase, login_by_password, create_user
+from database import get_pharmacist_by_email, get_all_patient_names, get_pharmacist_name_by_id, \
+    get_my_patients, get_medications_by_patient, get_alerts_by_patient, get_all_alerts, add_medication, \
+    get_pharmacist_by_email, supabase, login_by_password, check_user_exists, create_new_user
+from datetime import date
+import secrets
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
@@ -41,10 +39,10 @@ def medications():
         return redirect(url_for('login'))
 
     if request.method == 'GET':
-        my_patients = get_my_patients(session['pharmacist_id']) or []
+        my_patients = get_my_patients(session['pharmacist_id'])
         patient = my_patients[0] if my_patients else None
         medication_list = get_medications_by_patient(patient['patient_id']) if patient else []
-        session['current_patient_id'] = patient['patient_id'] if patient else None
+        session['current_patient_id'] = patient['patient_id']
 
     if request.method == 'POST':
         med_name = request.form['medicationName']
@@ -79,7 +77,7 @@ def myprofile():
         flash('Error fetching pharmacist details.', 'danger')
         return redirect(url_for('login'))
 
-    my_patients = get_my_patients(session['pharmacist_id']) or []
+    my_patients = get_my_patients(session['pharmacist_id'])
     total_patients = len(my_patients)  # Count the number of patients
 
     pharmacist_name = user.get('pharmacist_name', 'Pharmacist')
@@ -107,7 +105,7 @@ def alerts():
     for alert in alerts_data:
         alert['date'] = alert['date'].strftime("%Y-%m-%d") if isinstance(alert['date'], date) else alert['date']
 
-    my_patients = get_my_patients(session['pharmacist_id']) or []
+    my_patients = get_my_patients(session['pharmacist_id'])
     patient = my_patients[0] if my_patients else None
     alert_list = get_alerts_by_patient(patient['patient_id']) if patient else []
 
@@ -122,7 +120,7 @@ def get_alerts(patient_id):
 def managepatients():
     pharmacist_id = session.get('pharmacist_id')
     if pharmacist_id:
-        patients = get_my_patients(pharmacist_id) or []
+        patients = get_my_patients(pharmacist_id)
     else:
         flash('You must be logged in to view this page.', 'warning')
         return redirect(url_for('login'))
@@ -235,8 +233,16 @@ def create_account():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        flash(create_user(name, email, password), 'success')
-        return redirect(url_for('login'))
+        # Here, you'd include your logic to check if the user already exists and handle user creation
+        user_exists = check_user_exists(email)  # Implement this function to check if user already exists
+        if user_exists:
+            flash('Email already registered. Please login or use another email.', 'error')
+            return redirect(url_for('create_account'))
+        else:
+            # Function to add a new user to the database
+            create_new_user(name, email, password)  # Implement this function to create a new user
+            flash('Account created successfully! Please login.', 'success')
+            return redirect(url_for('login'))
     # If GET request or no form submission, render the account creation form
     return render_template('create-account.html')
 

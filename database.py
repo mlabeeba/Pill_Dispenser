@@ -25,6 +25,17 @@ def login_by_password(email, password):
     response = supabase.auth.sign_in_with_password({'email': email, 'password': password})
     return response;
 
+
+def get_pharmacist_name_by_id(pharmacist_id):
+    # Query the Pharmacist table
+    response = supabase.table('pharmacist').select('pharmacist_name').eq('pharmacist_id', pharmacist_id).execute()
+
+    # Check if data exists
+    if response.data and len(response.data) > 0:
+        return response.data[0]['pharmacist_name']  # Extract the name
+    return None  # Return None if no result
+
+
 # Fetch pharmacist specific patients
 def get_my_patients(pharmacist_id):
     response = supabase.table('patients').select('*').eq('pharmacist_id', pharmacist_id).execute()
@@ -72,39 +83,21 @@ def add_patient(patient_name, dob, pharmacist_id):
     return response
 
 # add security measures/authentication measures here too?
-def create_user(name, email, password):
-    # Check if user already exists in the profiles table
-    existing_profile = supabase.table("pharmacist").select("UID").eq("email", email).execute()
-
-    if existing_profile.data:
-        return "Email already registered, please login or reset password."
-
-    # Otherwise, add user to authentication table
-    try:
-        data = supabase.auth.sign_up({
-            'email': email,
-            'password': password,
-            'options': {
-                'email_redirect_to': 'https://localhost:5000/login',
-            },
-        })
-        UID = data.user.id
-
-        # if successful, add user to pharmacist table
-        data = {
-            'UID': UID,
-            'pharmacist_name': name,
-            'email': email,
-        }
-        supabase.table('pharmacist').insert(data).execute()
-
-        return "Confirmation email sent! Please check your email to confirm account."
-    except Exception as e:
-        print("Error: ", e)
-        return "Error: ", e
+def add_pharmacist(pharmacist_name, email, password):
+    data = {
+        'pharmacist_name': pharmacist_name,
+        'email': email,
+        'password': password
+    }
+    response = supabase.table('pharmacist').insert(data).execute()
+    return response
 
 def check_user_exists(email):
     # Function to check if user already exists in the database
     # This is a placeholder function
     pass
 
+def create_new_user(name, email, password):
+    # Function to add a new user to the database
+    # This is a placeholder function
+    pass
