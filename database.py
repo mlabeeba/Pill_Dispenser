@@ -62,7 +62,7 @@ def add_medication(med_name, dosage, stock, patient_id, pharmacist_id, med_notes
     response = supabase.table('medications').insert(data).execute()
     return response
 
-def add_patient(patient_name, dob, pharmacist_id):
+def add_new_patient(patient_name, dob, pharmacist_id):
     data = {
         'patient_name': patient_name,
         'dob': dob,
@@ -70,6 +70,7 @@ def add_patient(patient_name, dob, pharmacist_id):
     }
     response = supabase.table('patients').insert(data).execute()
     return response
+
 
 # add security measures/authentication measures here too?
 def create_user(name, email, password):

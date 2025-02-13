@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 
 from database import get_all_patient_names, get_my_patients, get_medications_by_patient, get_alerts_by_patient, \
     add_medication, \
-    get_pharmacist_by_email, supabase, login_by_password, create_user
+    get_pharmacist_by_email, supabase, login_by_password, create_user, add_new_patient
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
@@ -202,9 +202,33 @@ app.jinja_env.filters['datetime'] = format_datetime
 def add_med():
     return render_template('add-med.html')
 
-@app.route('/add-patient')
+
+@app.route('/add-patient', methods=['GET', 'POST'])
 def add_patient():
+    if 'email' not in session:
+        flash('Please log in to access this page.', 'warning')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        patient_name = request.form.get('patientName')
+        dob = request.form.get('dob')
+        pharmacist_id = session.get('pharmacist_id')
+
+        if not all([patient_name, dob, pharmacist_id]):
+            flash('All fields are required.', 'warning')
+            return redirect(url_for('add_patient'))
+
+        # Use the newly named function to avoid conflict
+        response = add_new_patient(patient_name, dob, pharmacist_id)
+        if 'error' in response:
+            flash(f"Error adding patient: {response['error']['message']}", 'danger')
+        else:
+            flash('Patient added successfully!', 'success')
+
+        return redirect(url_for('managepatients'))
+
     return render_template('add-patient.html')
+
 
 @app.route('/update_medications', methods=['POST'])
 def update_medications():

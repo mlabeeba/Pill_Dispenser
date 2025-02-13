@@ -4,98 +4,98 @@
 
 {% block content %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Manage Patients</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='patient-style.css') }}">
-        <script src="{{ url_for('static', filename='popup.js') }}"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Patients</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='patient-style.css') }}">
+    <script src="{{ url_for('static', filename='popup.js') }}"></script>
+</head>
 
-    <div class="manage-patients-container">
+<div class="manage-patients-container">
 
-        <h1>Manage Patients</h1>
+    <h1>Manage Patients</h1>
 
-        <!-- Search form with input field -->
-        <div class="search-bar">
-            <input type="text" name="search" placeholder="Search Patient" id="searchPatient">
-            <button type="button" class="search-btn">
-                <img src="{{ url_for('static', filename='images/search.png') }}" alt="Search" class="search-icon">
-                Search
-            </button>
-        </div>
-
-        <!-- Patients table -->
-        <table class="patients-table">
-            <div class="btn-group">
-                <h4>Patients</h4>
-                <button class="add-patient-btn">Add</button>
-            </div>
-
-            <thead>
-            <tr>
-                <th>Patient Name</th>
-                <th>Age</th>
-                <th>DOB</th>
-                <th>Medications</th>
-                <th>Notes</th>
-            </tr>
-            </thead>
-            <tbody id="patientsTableBody">
-            {% for patient in patients %}
-                <tr>
-                    <td>{{ patient['patient_name'] }}</td>
-                    <td>{{ patient['age'] }}</td>
-                    <td>{{ patient['dob'] }}</td>
-                    <td>{{ patient['medications'] if patient['medications'] else 'N/A' }}</td>
-                    <td>{{ patient['notes'] if patient['notes'] else 'N/A' }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="patient-popup">
-            <div class="patient-popup-content"></div>
-        </div>
-
+    <!-- Search form with input field -->
+    <div class="search-bar">
+        <input type="text" name="search" placeholder="Search Patient" id="searchPatient">
+        <button type="button" class="search-btn">
+            <img src="{{ url_for('static', filename='images/search.png') }}" alt="Search" class="search-icon">
+            Search
+        </button>
     </div>
 
-    <script>
-        const searchInput = document.getElementById('searchPatient');
-        const tableBody = document.getElementById('patientsTableBody');
+    <!-- Patients table -->
+    <table class="patients-table">
+        <div class="btn-group">
+            <h4>Patients</h4>
+            <button class="add-patient-btn">Add</button>
+        </div>
 
-        searchInput.addEventListener('input', function () {
-            const searchTerm = searchInput.value.trim();
+        <thead>
+        <tr>
+            <th>Patient Name</th>
+            <th>Age</th>
+            <th>DOB</th>
+            <th>Medications</th>
+            <th>Notes</th>
+        </tr>
+        </thead>
+        <tbody id="patientsTableBody">
+        {% for patient in patients %}
+            <tr>
+                <td>{{ patient['patient_name'] }}</td>
+                <td>{{ patient['age'] }}</td>
+                <td>{{ patient['dob'] }}</td>
+                <td>{{ patient['medications'] if patient['medications'] else 'N/A' }}</td>
+                <td>{{ patient['notes'] if patient['notes'] else 'N/A' }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-            fetch(`/searchpatients?search=${searchTerm}`)
-                .then(response => response.json())
-                .then(data => {
-                    tableBody.innerHTML = '';
-                    if (data.length > 0) {
-                        data.forEach(patient => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                        <td>${patient.patient_name}</td>
-                        <td>${patient.age}</td>
-                        <td>${patient.dob}</td>
-                        <td>${patient.medications || 'N/A'}</td>
-                        <td>${patient.notes || 'N/A'}</td>
-                    `;
-                            tableBody.appendChild(row);
-                        });
-                    } else {
+    <div class="patient-popup">
+        <div class="patient-popup-content"></div>
+    </div>
+
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchPatient');
+    const tableBody = document.getElementById('patientsTableBody');
+
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.trim();
+
+        fetch(`/searchpatients?search=${searchTerm}`)
+            .then(response => response.json())
+            .then(data => {
+                tableBody.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(patient => {
                         const row = document.createElement('tr');
-                        row.innerHTML = `<td colspan="5" style="text-align: center; color: gray;">No matching patients found.</td>`;
+                        row.innerHTML = `
+                    <td>${patient.patient_name}</td>
+                    <td>${patient.age}</td>
+                    <td>${patient.dob}</td>
+                    <td>${patient.medications || 'N/A'}</td>
+                    <td>${patient.notes || 'N/A'}</td>
+                `;
                         tableBody.appendChild(row);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error fetching data</td></tr>`;
-                });
-        });
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="5" style="text-align: center; color: gray;">No matching patients found.</td>`;
+                    tableBody.appendChild(row);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error fetching data</td></tr>`;
+            });
+    });
 
 
-    </script>
+</script>
 
 {% endblock %}

@@ -1,31 +1,33 @@
 {% block content %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Add Medications</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='add-patient-style.css') }}">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='add-patient-style.css') }}">
+</head>
 
-    <div id="popupForm">
-        <h3>Add Patient</h3>
+<div id="popupForm">
+    <h3>Add Patient</h3>
 
-        <form id="addPatientForm" method = "POST">
+    <!-- Ensure the action attribute points to the correct endpoint -->
+    <form id="addPatientForm" method="POST" action="{{ url_for('add_patient') }}">
 
-            <div class="form-input">
+        <div class="form-input">
             <label for="patientName">Patient Name:</label>
             <input type="text" id="patientName" name="patientName" placeholder="Enter Patient Name" required>
-            </div>
+        </div>
 
-            <div class="form-input">
+        <div class="form-input">
             <label for="dob">Date of Birth:</label>
-            <input type="text" id="dob" name="dob" placeholder="Enter Date of Birth" required>
-            </div>
+            <input type="date" id="dob" name="dob" required>
+        </div>
 
-            <div class="popup-actions">
-                <button type="button" id="cancelButton" class="cancel-btn">Cancel</button>
-                <button type="submit" class="save-btn">Save</button>
-            </div>
-        </form>
-    </div>
+        <div class="popup-actions">
+            <button type="button" id="cancelButton" class="cancel-btn">Cancel</button>
+            <button type="submit" class="save-btn">Save</button>
+        </div>
+    </form>
+</div>
+
 {% endblock %}

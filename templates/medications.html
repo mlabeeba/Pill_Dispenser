@@ -21,7 +21,7 @@
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
                         <option value="{{ patient.patient_id }}"
-                        {% if patient.patient_id == current_patient_id %}selected{% endif %}>{{ patient.patient_name }}
+                                {% if patient.patient_id == current_patient_id %}selected{% endif %}>{{ patient.patient_name }}
                         </option>
                     {% endfor %}
                 </select>
@@ -46,19 +46,13 @@
                             <th>Medication Name</th>
                             <th>Dosage</th>
                             <th>Stock Levels</th>
-                            <!--<th>Schedule</th>-->
                             <th>Notes</th>
                         </tr>
                         <tbody id="medications-table-body">
-                        {% for med in medications %}
-                            <tr>
-                                <td>{{ med.med_id }}</td>
-                                <td contenteditable="false" class="editable">{{ med.med_name }}</td>
-                                <td contenteditable="false" class="editable">{{ med.dosage }}</td>
-                                <td contenteditable="false" class="editable">{{ med.stock_levels }}</td>
-                                <td contenteditable="false" class="editable">{{ med.med_notes if med.med_notes else ''}}</td>
-                            </tr>
-                        {% endfor %}
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Please select a patient to view medications.
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -67,9 +61,7 @@
             <div class="med-list">
                 <h4>Medication List</h4>
                 <ul id="medications-list">
-                    {% for med in medications %}
-                        <li>{{ med.med_name }}</li>
-                    {% endfor %}
+                    <li>Select a patient to display medications.</li>
                 </ul>
                 <button type="button" id="push-changes-btn">Push Changes to Device</button>
             </div>
@@ -147,38 +139,32 @@
                     .then(response => response.json())
                     .then(data => {
                         tableBody.innerHTML = '';
+                        medList.innerHTML = '';
                         if (data.length > 0) {
                             data.forEach(med => {
                                 const row = document.createElement('tr');
                                 row.innerHTML = `<td>${med.med_id}</td><td class="editable">${med.med_name}</td><td class="editable">${med.dosage}</td><td class="editable">${med.stock_levels}</td><td class="editable">${med.med_notes}</td>`;
                                 tableBody.appendChild(row);
-                            });
-                        } else {
-                            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">No medications found for the selected patient.</td></tr>';
-                        }
-                        isEditing = false;
-                        editButton.textContent = 'Edit';
-                        applyEditableState();
 
-                        medList.innerHTML = '';
-                        if (data.length > 0) {
-                            data.forEach(med => {
                                 const listItem = document.createElement('li');
                                 listItem.textContent = med.med_name;
                                 medList.appendChild(listItem);
                             });
                         } else {
+                            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">No medications found for this patient.</td></tr>';
                             const listItem = document.createElement('li');
-                            listItem.textContent = 'No medications found for the selected patient.';
+                            listItem.textContent = 'No medications found for this patient.';
                             medList.appendChild(listItem);
                         }
+                        isEditing = false;
+                        editButton.textContent = 'Edit';
+                        applyEditableState();
                     })
-
                     .catch(error => {
                         console.error('Error fetching data:', error);
                     });
             });
         });
+
     </script>
 {% endblock %}
-
