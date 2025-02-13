@@ -9,9 +9,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Manage Patients</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='patient-style.css') }}">
+        <script src="{{ url_for('static', filename='popup.js') }}"></script>
     </head>
 
     <div class="manage-patients-container">
+
         <h1>Manage Patients</h1>
 
         <!-- Search form with input field -->
@@ -25,7 +27,11 @@
 
         <!-- Patients table -->
         <table class="patients-table">
-            <h4>Patients</h4>
+            <div class="btn-group">
+                <h4>Patients</h4>
+                <button class="add-patient-btn">Add</button>
+            </div>
+
             <thead>
             <tr>
                 <th>Patient Name</th>
@@ -47,6 +53,11 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <div class="patient-popup">
+            <div class="patient-popup-content"></div>
+        </div>
+
     </div>
 
     <script>

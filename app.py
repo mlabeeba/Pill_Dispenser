@@ -200,6 +200,9 @@ app.jinja_env.filters['datetime'] = format_datetime
 def add_med():
     return render_template('add-med.html')
 
+@app.route('/add-patient')
+def add_patient():
+    return render_template('add-patient.html')
 
 @app.route('/update_medications', methods=['POST'])
 def update_medications():

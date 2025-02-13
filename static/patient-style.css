@@ -97,7 +97,32 @@ h1 {
     margin-right: 5px;               /* Space between icon and text */
 }
 
-h4 {
+.btn-group {
+    display: flex;       /* Enables flexbox layout */
+    justify-content: space-between; /* Aligns the first item to the left and the second item to the right */
+    align-items: center; /* Vertically center the items in the container */
+    width: 100%;         /* Ensures the container spans the full width of its parent */
+    padding-top: 40px;   /* Keeps original padding from your setup */
+}
+
+.add-patient-btn {
+    padding: 10px 40px;  /* Uniform padding for better button appearance */
+    cursor: pointer;     /* Indicates the element is clickable */
+    background-color: #F4F4F4;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
     color: black;
-    padding-top: 20px;
+}
+
+.add-patient-btn:hover {
+    background-color: #e0e0e0;
+}
+
+h4 {
+    margin: 0; /* Ensures no extra space around the heading */
+    color: black; /* Text color for the heading */
 }
