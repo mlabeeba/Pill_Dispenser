@@ -34,6 +34,7 @@
                     <h4>Current Rotation</h4>
 
                     <div class="button-group">
+                        <button type="button" class="schedule-btn">Schedule</button>
                         <button type="button" id="editButton" onclick="toggleEdit()">Edit</button>
                         <button type="button" class="add-med-btn">Add</button>
                     </div>
@@ -67,13 +68,20 @@
             </div>
         </div>
 
+        {# Add Medication Popup #}
         <div class="medication-popup">
             <div class="medication-popup-content"></div>
+        </div>
+
+        {# Schedule Medication Popup #}
+        <div class="schedule-popup">
+            <div class="schedule-popup-content"></div>
         </div>
 
     </div>
 
     <script>
+        {# Schedule Medication Form Popup #}
         document.addEventListener('DOMContentLoaded', function () {
             const patientDropdown = document.getElementById('patient');
             const tableBody = document.getElementById('medications-table-body');

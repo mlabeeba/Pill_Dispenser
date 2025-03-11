@@ -40,7 +40,6 @@ function loadMedicationForm() {
 
 /* Add Patient Button */
 // ---------------------- /
-
 document.addEventListener("DOMContentLoaded", function () {
     // Listener for the "Add Patient" button
     document.addEventListener("click", (e) => {
@@ -70,3 +69,40 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+/* Add Schedule Button */
+// ---------------------- /
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("schedule-btn")) {
+        toggleSchedulePopup(); // Open or close the popup
+        loadScheduleForm(); // Dynamically load the form
+    }
+});
+
+// Function to toggle the schedule popup visibility
+function toggleSchedulePopup() {
+    document.querySelector(".schedule-popup").classList.toggle("open");
+    document.body.classList.toggle("hide-scrolling");
+}
+
+// Function to dynamically load the schedule form
+function loadScheduleForm() {
+    fetch('/schedule-med')
+        .then(response => response.text())
+        .then(html => {
+            const popupContent = document.querySelector(".schedule-popup-content");
+            popupContent.innerHTML = html;
+
+            // Add event listener for the cancel button inside the popup
+            const cancelButton = document.getElementById("cancelScheduleButton");
+            cancelButton.addEventListener("click", toggleSchedulePopup);
+
+            // Add event listener for the form submission
+            const scheduleForm = document.getElementById("scheduleForm");
+            scheduleForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                toggleSchedulePopup();
+                alert("Medication scheduled successfully!");
+            });
+        })
+        .catch(error => console.error("Error loading the schedule form:", error));
+}

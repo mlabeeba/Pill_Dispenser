@@ -5,8 +5,8 @@ from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 
 from database import get_all_patient_names, get_my_patients, get_medications_by_patient, get_alerts_by_patient, \
-    add_medication, \
-    get_pharmacist_by_email, supabase, login_by_password, create_user, add_new_patient
+    add_medication, get_pharmacist_by_email, supabase, login_by_password, create_user, add_new_patient, \
+    get_schedules_by_patient
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
@@ -66,7 +66,14 @@ def get_medications(patient_id):
 
 @app.route('/schedule')
 def schedule():
-    return render_template('schedule.html')
+    if 'email' not in session:
+        flash('Please log in to access the dashboard.', 'warning')
+        return redirect(url_for('login'))
+
+    current_patient_id = session.get('current_patient_id')
+    schedules = get_schedules_by_patient(current_patient_id) if current_patient_id else []
+
+    return render_template('schedule.html', schedules=schedules)
 
 @app.route('/myprofile')
 def myprofile():
@@ -127,20 +134,17 @@ def managepatients():
         flash('You must be logged in to view this page.', 'warning')
         return redirect(url_for('login'))
 
-    # Make sure each patient has medication and note data
     for patient in patients:
-        # Use the correct key for patient ID here, e.g., 'patient_id'
-        patient_id = patient.get('patient_id')  # Assuming the key is 'patient_id'
+        patient_id = patient.get('patient_id')
         if patient_id:
             medications = get_medications_by_patient(patient_id)
             patient['medications'] = ', '.join([med['med_name'] for med in medications]) if medications else 'N/A'
-            patient['notes'] = ', '.join([med['med_notes'] for med in medications]) if medications else 'N/A'
+            patient['notes'] = ', '.join([str(med['med_notes']) if med['med_notes'] is not None else '' for med in medications]) if medications else 'N/A'
         else:
             patient['medications'] = 'N/A'
             patient['notes'] = 'N/A'
 
     return render_template('manage-patients.html', patients=patients)
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -263,6 +267,49 @@ def create_account():
         return redirect(url_for('login'))
     # If GET request or no form submission, render the account creation form
     return render_template('create-account.html')
+
+@app.route('/schedule-med')
+def add_schedule():
+    if 'email' not in session:
+        flash('Please log in to access this page.', 'warning')
+        return redirect(url_for('login'))
+
+    # Fetch all medications for the currently selected patient
+    current_patient_id = session.get('current_patient_id')
+    medications = get_medications_by_patient(current_patient_id) if current_patient_id else []
+
+    return render_template('schedule-med.html', medications=medications)
+
+@app.route('/schedule_medication', methods=['POST'])
+def schedule_medication():
+    if 'email' not in session:
+        flash('Please log in to schedule medication.', 'warning')
+        return redirect(url_for('login'))
+
+    data = request.json
+    medication_id = data.get('medication')
+    date = data.get('date')
+    time = data.get('time')
+    current_patient_id = session.get('current_patient_id')
+    pharmacist_id = session.get('pharmacist_id')
+
+    if not all([medication_id, date, time, current_patient_id, pharmacist_id]):
+        return jsonify({'success': False, 'message': 'Missing required data'}), 400
+
+    # Save the schedule to the database
+    response = supabase.table('schedules').insert({
+        'med_id': medication_id,
+        'patient_id': current_patient_id,
+        'pharmacist_id': pharmacist_id,
+        'schedule_date': date,
+        'schedule_time': time
+    }).execute()
+
+    if response.get('error'):
+        return jsonify({'success': False, 'message': response['error']['message']}), 500
+
+    return jsonify({'success': True, 'message': 'Medication scheduled successfully!'})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
