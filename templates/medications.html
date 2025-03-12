@@ -21,10 +21,12 @@
                 <select id="patient" name="patient">
                     {% for patient in patient_names %}
                         <option value="{{ patient.patient_id }}"
-                                {% if patient.patient_id == current_patient_id %}selected{% endif %}>{{ patient.patient_name }}
+                                {% if patient.patient_id == current_patient_id %}selected{% endif %}>
+                            {{ patient.patient_name }}
                         </option>
                     {% endfor %}
                 </select>
+
             </div>
         </div>
 
@@ -81,13 +83,12 @@
     </div>
 
     <script>
-        {# Schedule Medication Form Popup #}
         document.addEventListener('DOMContentLoaded', function () {
             const patientDropdown = document.getElementById('patient');
             const tableBody = document.getElementById('medications-table-body');
             const medList = document.getElementById('medications-list');
             const editButton = document.getElementById('editButton');
-            let isEditing = false;  // This flag controls whether editing is enabled
+            let isEditing = false;
 
             function applyEditableState() {
                 const editableCells = document.querySelectorAll('.editable');
@@ -143,6 +144,9 @@
 
             patientDropdown.addEventListener('change', function () {
                 const patientId = this.value;
+                sessionStorage.setItem('selectedPatientId', patientId); // ✅ Store the selected patient ID
+                console.log('✅ Selected patient ID stored:', patientId);
+
                 fetch(`/get_medications/${patientId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -172,7 +176,14 @@
                         console.error('Error fetching data:', error);
                     });
             });
-        });
 
+            // ✅ Auto-select the stored patient when the page reloads
+            const storedPatientId = sessionStorage.getItem('selectedPatientId');
+            if (storedPatientId) {
+                patientDropdown.value = storedPatientId;
+                patientDropdown.dispatchEvent(new Event('change'));
+            }
+        });
     </script>
+
 {% endblock %}

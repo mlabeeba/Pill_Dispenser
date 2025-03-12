@@ -103,24 +103,27 @@ function loadScheduleForm() {
             }
             popupContent.innerHTML = html;
 
-            console.log("✅ Schedule form loaded!"); // Debugging
+            console.log("✅ Schedule form loaded!");
+
+            // Fetch medications for the selected patient
+            fetchMedicationsForSelectedPatient();
 
             // Ensure tabs work inside the popup
             setTimeout(() => {
                 loadScheduleTabs();
-            }, 100); // Ensure DOM updates before running
+            }, 100);
 
             // Ensure the cancel button exists before adding event listener
             setTimeout(() => {
                 const cancelButton = document.getElementById("cancelScheduleButton");
                 if (cancelButton) {
                     cancelButton.addEventListener("click", (e) => {
-                        e.preventDefault(); // Prevent default behavior
-                        toggleSchedulePopup(); // Close popup without validation
+                        e.preventDefault();
+                        toggleSchedulePopup();
                     });
                     console.log("✅ Cancel button found and event added!");
                 } else {
-                    console.error("❌ Error: cancelScheduleButton not found! Check schedule-med.html.");
+                    console.error("❌ Error: cancelScheduleButton not found!");
                 }
             }, 300);
 
@@ -128,7 +131,7 @@ function loadScheduleForm() {
             const scheduleForm = document.getElementById("scheduleForm");
             if (scheduleForm) {
                 document.getElementById("saveScheduleButton").addEventListener("click", (e) => {
-                    e.preventDefault(); // Stop form from submitting on its own
+                    e.preventDefault();
 
                     // Get selected tab
                     const activeTab = document.querySelector(".tablinks.active").getAttribute("data-type");
@@ -137,15 +140,15 @@ function loadScheduleForm() {
                     let data = {};
 
                     if (activeTab === "time") {
-                        data.scheduleDate = document.getElementById("scheduleDate").value;
+                        data.scheduleDate = document.getElementById("scheduleStartDate").value;
                         data.scheduleTime = document.getElementById("scheduleTime").value;
                         if (!data.scheduleDate || !data.scheduleTime) {
                             valid = false;
                         }
                     } else if (activeTab === "interval") {
-                        data.intervalDays = document.getElementById("intervalDays").value;
-                        data.intervalHours = document.getElementById("intervalHours").value;
-                        if (!data.intervalDays || !data.intervalHours) {
+                        data.intervalValue = document.getElementById("intervalValue").value;
+                        data.intervalUnit = document.getElementById("intervalUnit").value;
+                        if (!data.intervalValue || !data.intervalUnit) {
                             valid = false;
                         }
                     }
@@ -167,6 +170,51 @@ function loadScheduleForm() {
         })
         .catch(error => console.error("❌ Error loading the schedule form:", error));
 }
+
+/* Fetch Medications for Selected Patient */
+function fetchMedicationsForSelectedPatient() {
+    const selectedPatientId = sessionStorage.getItem("selectedPatientId"); // Get stored patient ID
+
+    if (!selectedPatientId) {
+        console.error("❌ No patient ID found in sessionStorage!");
+        return;
+    }
+
+    console.log("📡 Fetching medications for patient ID:", selectedPatientId);
+
+    fetch(`/get_medications/${selectedPatientId}`)
+        .then(response => response.json())
+        .then(data => {
+            const medicationDropdown = document.getElementById("medication");
+            if (!medicationDropdown) {
+                console.error("❌ Error: Medication dropdown not found!");
+                return;
+            }
+
+            // Clear existing options
+            medicationDropdown.innerHTML = "";
+
+            if (data.length === 0) {
+                console.warn("⚠️ No medications found for this patient.");
+                medicationDropdown.classList.add("placeholder"); // Apply placeholder styling
+                medicationDropdown.setAttribute("disabled", "true"); // Disable if no medications
+            } else {
+                medicationDropdown.classList.remove("placeholder");
+                medicationDropdown.removeAttribute("disabled");
+
+                data.forEach(med => {
+                    let option = document.createElement("option");
+                    option.value = med.med_id;
+                    option.textContent = med.med_name;
+                    medicationDropdown.appendChild(option);
+                });
+            }
+
+            console.log("✅ Medications loaded into dropdown:", data);
+        })
+        .catch(error => console.error("❌ Error fetching medications:", error));
+}
+
 
 /* Function to Handle Tabs Inside the Schedule Popup */
 function loadScheduleTabs() {
