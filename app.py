@@ -71,9 +71,9 @@ def schedule():
         return redirect(url_for('login'))
 
     current_patient_id = session.get('current_patient_id')
-    schedules = get_schedules_by_patient(current_patient_id) if current_patient_id else []
+    schedule_entries = get_schedules_by_patient(current_patient_id) if current_patient_id else []
+    return render_template('schedule.html', schedule_entries=schedule_entries)
 
-    return render_template('schedule.html', schedules=schedules)
 
 @app.route('/myprofile')
 def myprofile():
@@ -283,32 +283,52 @@ def add_schedule():
 @app.route('/schedule_medication', methods=['POST'])
 def schedule_medication():
     if 'email' not in session:
-        flash('Please log in to schedule medication.', 'warning')
-        return redirect(url_for('login'))
+        return jsonify({'success': False, 'message': 'Please log in to schedule medication!'}), 403
 
-    data = request.json
-    medication_id = data.get('medication')
-    date = data.get('date')
-    time = data.get('time')
-    current_patient_id = session.get('current_patient_id')
-    pharmacist_id = session.get('pharmacist_id')
+    try:
+        start_date = request.form.get('scheduleStartDate')
+        end_date = request.form.get('scheduleEndDate')
+        schedule_time = request.form.get('scheduleTime') or None
+        interval_value = request.form.get('intervalValue') or None
+        interval_unit = request.form.get('intervalUnit') or None
+        patient_id = session.get('current_patient_id')
+        pharmacist_id = session.get('pharmacist_id')  # This is a UUID, don't convert it to int
 
-    if not all([medication_id, date, time, current_patient_id, pharmacist_id]):
-        return jsonify({'success': False, 'message': 'Missing required data'}), 400
+        if not all([start_date, end_date, patient_id, pharmacist_id]):
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
 
-    # Save the schedule to the database
-    response = supabase.table('schedules').insert({
-        'med_id': medication_id,
-        'patient_id': current_patient_id,
-        'pharmacist_id': pharmacist_id,
-        'schedule_date': date,
-        'schedule_time': time
-    }).execute()
+        # Prepare data for insertion, excluding None values
+        data_to_insert = {
+            'patient_id': int(patient_id),  # Keep patient_id as an integer
+            'pharmacist_id': pharmacist_id,  # Keep pharmacist_id as a UUID string
+            'start_date': start_date,
+            'end_date': end_date
+        }
 
-    if response.get('error'):
-        return jsonify({'success': False, 'message': response['error']['message']}), 500
+        if schedule_time:
+            data_to_insert['schedule_time'] = schedule_time
 
-    return jsonify({'success': True, 'message': 'Medication scheduled successfully!'})
+        if interval_value and interval_unit:
+            data_to_insert['interval_value'] = int(interval_value)
+            data_to_insert['interval_unit'] = interval_unit
+
+        # Debugging: Print final data
+        print("✅ Data being inserted:", data_to_insert)
+
+        # Insert into Supabase
+        response = supabase.table('schedule').insert(data_to_insert).execute()
+
+        if 'error' in response:
+            print("❌ Supabase Insert Error:", response['error'])
+            return jsonify({'success': False, 'message': response['error']['message']}), 500
+
+        return jsonify({'success': True, 'message': 'Medication scheduled successfully!'})
+
+    except Exception as e:
+        print("🚨 Unexpected Error:", str(e))
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+
+
 
 
 if __name__ == '__main__':

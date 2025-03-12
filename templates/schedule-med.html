@@ -12,16 +12,17 @@
         <h2>Schedule Medication</h2>
         <p>Fill in the details below:</p>
 
-        <form id="scheduleForm">
+        <form id="scheduleForm" action="{{ url_for('schedule_medication') }}" method="POST">
             <label for="medication">Medication:</label>
-            <select id="medication" name="medication">
-                <option value=""></option>
+            <select id="medication" name="medication" required>
+                <option value="">Select a medication</option>
             </select>
 
-            <label for="scheduleDate">Start Date:</label>
-            <input type="date" id="scheduleStartDate" name="scheduleDate">
-            <label for="scheduleDate">End Date:</label>
-            <input type="date" id="scheduleEndDate" name="scheduleDate">
+            <label for="scheduleStartDate">Start Date:</label>
+            <input type="date" id="scheduleStartDate" name="scheduleStartDate" required>
+
+            <label for="scheduleEndDate">End Date:</label>
+            <input type="date" id="scheduleEndDate" name="scheduleEndDate" required>
 
             <div class="tab">
                 <button type="button" class="tablinks" data-type="time">Schedule Time</button>
@@ -54,7 +55,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Get selected patient ID from sessionStorage (set in medications page)
             const selectedPatientId = sessionStorage.getItem("selectedPatientId");
 
             function fetchMedicationsForSelectedPatient() {
@@ -67,7 +67,7 @@
                     .then(response => response.json())
                     .then(data => {
                         const medicationDropdown = document.getElementById("medication");
-                        medicationDropdown.innerHTML = '<option value=""> </option>'; // Reset dropdown
+                        medicationDropdown.innerHTML = '<option value="">Select a medication</option>';
 
                         data.forEach(med => {
                             let option = document.createElement("option");
@@ -81,6 +81,43 @@
 
             // Fetch medications when the popup opens
             fetchMedicationsForSelectedPatient();
+
+            // Prevent selecting both scheduleTime and interval
+            const scheduleTimeInput = document.getElementById("scheduleTime");
+            const intervalValueInput = document.getElementById("intervalValue");
+            const intervalUnitInput = document.getElementById("intervalUnit");
+            const scheduleForm = document.getElementById("scheduleForm");
+
+            function enforceOneSelection() {
+                if (scheduleTimeInput.value) {
+                    intervalValueInput.disabled = true;
+                    intervalUnitInput.disabled = true;
+                } else {
+                    intervalValueInput.disabled = false;
+                    intervalUnitInput.disabled = false;
+                }
+
+                if (intervalValueInput.value) {
+                    scheduleTimeInput.disabled = true;
+                } else {
+                    scheduleTimeInput.disabled = false;
+                }
+            }
+
+            scheduleTimeInput.addEventListener("change", enforceOneSelection);
+            intervalValueInput.addEventListener("change", enforceOneSelection);
+            intervalUnitInput.addEventListener("change", enforceOneSelection);
+
+            // Enforce selection on form submission
+            scheduleForm.addEventListener("submit", function (event) {
+                if (!scheduleTimeInput.value && !intervalValueInput.value) {
+                    alert("❌ You must select either a specific time or an interval.");
+                    event.preventDefault();
+                }
+            });
+
+            // Apply rule on load
+            enforceOneSelection();
         });
     </script>
 

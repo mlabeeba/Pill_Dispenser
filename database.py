@@ -109,8 +109,8 @@ def check_user_exists(email):
     # This is a placeholder function
     pass
 
-def get_schedules_by_patient(patient_id):
-    response = supabase.table('schedules').select('*').eq('patient_id', patient_id).execute()
-    return response.data if response.data else []
 
+def get_schedules_by_patient(patient_id):
+    response = supabase.table('schedule').select('*').eq('patient_id', patient_id).execute()
+    return response.data if response.data else []
 

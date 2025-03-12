@@ -71,15 +71,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* Add Schedule Button */
 // ---------------------- /
-document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("schedule-btn")) {
-        e.preventDefault(); // Stop any form submission or link navigation
-        toggleSchedulePopup(); // Open the popup
-        loadScheduleForm(); // Load the schedule form dynamically
-    }
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ Document Loaded - Event Listeners Ready");
+
+    /* Add Schedule Button */
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("schedule-btn")) {
+            e.preventDefault(); // Prevent full-page reload
+            toggleSchedulePopup();
+            loadScheduleForm();
+        }
+    });
+
+    // Ensure the "Save" button submits the form correctly
+    document.addEventListener("click", async function (e) {
+        if (e.target.id === "saveScheduleButton") {
+            e.preventDefault(); // Stop default form submission
+
+            const scheduleForm = document.getElementById("scheduleForm");
+            if (!scheduleForm) {
+                console.error("❌ Error: Schedule form not found!");
+                return;
+            }
+
+            let formData = new FormData(scheduleForm);
+
+            try {
+                let response = await fetch("/schedule_medication", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let result = await response.json();
+
+                if (result.success) {
+                    // Show success message inside the popup instead of printing JSON
+                    const popupContent = document.querySelector(".schedule-popup-content");
+                    popupContent.innerHTML = `<p style="color: green; font-weight: bold;">✅ Medication scheduled successfully!</p>`;
+
+                    setTimeout(() => {
+                        toggleSchedulePopup(); // Close the popup after 2 seconds
+                        window.location.reload(); // Refresh the page to show the updated schedule
+                    }, 2000);
+                } else {
+                    alert(`❌ Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("❌ Error submitting schedule:", error);
+                alert("❌ An unexpected error occurred. Please try again.");
+            }
+        }
+    });
 });
 
-// Function to toggle the schedule popup visibility
+/* Function to toggle schedule popup */
 function toggleSchedulePopup() {
     console.log("✅ Toggling Schedule Popup...");
     const popup = document.querySelector(".schedule-popup");
@@ -91,9 +137,9 @@ function toggleSchedulePopup() {
     }
 }
 
-// Function to dynamically load the schedule form
+/* Function to dynamically load the schedule form */
 function loadScheduleForm() {
-    fetch('/schedule-med')
+    fetch("/schedule-med")
         .then(response => response.text())
         .then(html => {
             const popupContent = document.querySelector(".schedule-popup-content");
@@ -113,7 +159,7 @@ function loadScheduleForm() {
                 loadScheduleTabs();
             }, 100);
 
-            // Ensure the cancel button exists before adding event listener
+            // Attach event listener for the cancel button inside the popup
             setTimeout(() => {
                 const cancelButton = document.getElementById("cancelScheduleButton");
                 if (cancelButton) {
@@ -126,47 +172,6 @@ function loadScheduleForm() {
                     console.error("❌ Error: cancelScheduleButton not found!");
                 }
             }, 300);
-
-            // Ensure the form only submits when clicking "Save"
-            const scheduleForm = document.getElementById("scheduleForm");
-            if (scheduleForm) {
-                document.getElementById("saveScheduleButton").addEventListener("click", (e) => {
-                    e.preventDefault();
-
-                    // Get selected tab
-                    const activeTab = document.querySelector(".tablinks.active").getAttribute("data-type");
-
-                    let valid = true;
-                    let data = {};
-
-                    if (activeTab === "time") {
-                        data.scheduleDate = document.getElementById("scheduleStartDate").value;
-                        data.scheduleTime = document.getElementById("scheduleTime").value;
-                        if (!data.scheduleDate || !data.scheduleTime) {
-                            valid = false;
-                        }
-                    } else if (activeTab === "interval") {
-                        data.intervalValue = document.getElementById("intervalValue").value;
-                        data.intervalUnit = document.getElementById("intervalUnit").value;
-                        if (!data.intervalValue || !data.intervalUnit) {
-                            valid = false;
-                        }
-                    }
-
-                    if (!valid) {
-                        alert("⚠️ Please fill in all fields before submitting.");
-                        return;
-                    }
-
-                    console.log("✅ Form submitted:", data);
-
-                    // Show success message & close the popup
-                    alert("✅ Medication scheduled successfully!");
-                    toggleSchedulePopup();
-                });
-            } else {
-                console.error("❌ Error: scheduleForm not found!");
-            }
         })
         .catch(error => console.error("❌ Error loading the schedule form:", error));
 }
@@ -214,7 +219,6 @@ function fetchMedicationsForSelectedPatient() {
         })
         .catch(error => console.error("❌ Error fetching medications:", error));
 }
-
 
 /* Function to Handle Tabs Inside the Schedule Popup */
 function loadScheduleTabs() {
