@@ -1,120 +1,101 @@
 {% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Medication</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='schedule-med-style.css') }}">
-    <style>
-        .tab-container {
-            display: flex;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 10px;
-        }
-        .tab-button {
-            flex: 1;
-            padding: 8px;
-            cursor: pointer;
-            text-align: center;
-            border: none;
-            background-color: #f1f1f1;
-            transition: background-color 0.3s;
-        }
-        .tab-button.active {
-            background-color: #fff;
-            border-bottom: 2px solid #fff;
-        }
-        .tab-button:hover {
-            background-color: #ddd;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Schedule Medication</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='schedule-med-style.css') }}">
 
-<div id="popupForm">
-    <h3>Schedule Medication</h3>
+        <style>
 
-    <form id="scheduleForm" method="POST">
+            /* Style the tab */
+            .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+            }
 
-        <div class="form-input">
-            <label for="medication">Select Medication:</label>
-            <select id="medication" name="medication" required class="styled-select">
-                <option value="">--Select Medication--</option>
-                {% for med in medications %}
-                    <option value="{{ med.med_id }}">{{ med.med_name }}</option>
-                {% endfor %}
+            /* Style the buttons inside the tab */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+            }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+                border-radius: 0;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+                border-radius: 0;
+            }
+
+            /* Style the tab content */
+            .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+
+            .tabcontent.active {
+                display: block !important;
+            }
+        </style>
+    </head>
+
+    <div class="schedule-popup-content">
+        <h2>Schedule Medication</h2>
+        <p>Fill in the details below:</p>
+
+        <form id="scheduleForm">
+            <label for="medication">Medication:</label>
+            <select id="medication" name="medication">
+                <option value="med1">Medication 1</option>
+                <option value="med2">Medication 2</option>
             </select>
-        </div>
 
-        <div class="form-input">
-            <label for="date">Select Date:</label>
-            <input type="date" id="date" name="date" required class="styled-input">
-        </div>
+            <label for="scheduleDate">Start Date:</label>
+            <input type="date" id="scheduleStartDate" name="scheduleDate">
+            <label for="scheduleDate">End Date:</label>
+            <input type="date" id="scheduleEndDate" name="scheduleDate">
 
-        <div class="tab-container">
-            <button type="button" class="tab-button active" data-target="#timeTab">Select Time</button>
-            <button type="button" class="tab-button" data-target="#intervalTab">Select Interval</button>
-        </div>
+            <div class="tab">
+                <button type="button" class="tablinks" data-type="time">Schedule Time</button>
+                <button type="button" class="tablinks" data-type="interval">Schedule Interval</button>
+            </div>
 
-        <div id="timeTab" class="tab-content active">
-            <label for="time">Select Time:</label>
-            <select id="time" name="time" class="styled-select">
-                <option value="">--Select Time--</option>
-                {% for hour in range(0, 24) %}
-                    {% for minute in range(0, 60, 15) %}
-                        <option value="{{ "%02d:%02d" | format(hour, minute) }}">{{ "%02d:%02d" | format(hour, minute) }}</option>
-                    {% endfor %}
-                {% endfor %}
-            </select>
-        </div>
+            <div id="time" class="tabcontent">
+                <label for="scheduleTime">Select Time:</label>
+                <input type="time" id="scheduleTime" name="scheduleTime">
+            </div>
 
-        <div id="intervalTab" class="tab-content">
-            <label for="interval">Dispense every:</label>
-            <select id="interval" name="interval" class="styled-select">
-                <option value="">--Select Interval--</option>
-                <option value="15">15 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="120">2 hours</option>
-                <option value="240">4 hours</option>
-                <option value="1440">1 day</option>
-            </select>
-        </div>
+            <div id="interval" class="tabcontent">
+                <label for="intervalHours">Dispense Every:</label>
+                <div class="interval-input">
+                    <input type="number" id="intervalValue" name="intervalValue" min="1">
+                    <select id="intervalUnit" name="intervalUnit">
+                        <option value="seconds">sec</option>
+                        <option value="minutes">min</option>
+                        <option value="hours">hour</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="popup-actions">
-            <button type="button" id="cancelScheduleButton" class="cancel-btn">Cancel</button>
-            <button type="submit" class="save-btn">Schedule</button>
-        </div>
-    </form>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const timeTab = document.getElementById('timeTab');
-        const intervalTab = document.getElementById('intervalTab');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                event.preventDefault();
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                if (button.getAttribute('data-target') === '#timeTab') {
-                    timeTab.style.display = 'block';
-                    intervalTab.style.display = 'none';
-                } else {
-                    timeTab.style.display = 'none';
-                    intervalTab.style.display = 'block';
-                }
-            });
-        });
-    });
-</script>
+            <div class="popup-actions">
+                <button type="button" id="cancelScheduleButton">Cancel</button>
+                <button type="submit" id="saveScheduleButton">Save</button>
+            </div>
+        </form>
+    </div>
 
 {% endblock %}
