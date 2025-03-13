@@ -4,13 +4,11 @@ from datetime import date
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 
-from database import get_all_patient_names, get_my_patients, get_medications_by_patient, get_alerts_by_patient, \
-    add_medication, get_pharmacist_by_email, supabase, login_by_password, create_user, add_new_patient, \
-    get_schedules_by_patient
+from database import *
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
-patient_names = [name[0] for name in get_all_patient_names()]  # Get names from database
+#app.config['SECRET_KEY'] = secrets.token_hex(16) #generate randome secret key for the session
+app.config['SECRET_KEY'] = 'NMK01' #test for hardware use
 
 @app.route('/')
 def root():
@@ -312,24 +310,24 @@ def schedule_medication():
             data_to_insert['interval_value'] = int(interval_value)
             data_to_insert['interval_unit'] = interval_unit
 
-        # Debugging: Print final data
-        print("✅ Data being inserted:", data_to_insert)
-
         # Insert into Supabase
         response = supabase.table('schedule').insert(data_to_insert).execute()
 
         if 'error' in response:
-            print("❌ Supabase Insert Error:", response['error'])
+            print("Supabase Insert Error:", response['error'])
             return jsonify({'success': False, 'message': response['error']['message']}), 500
 
         return jsonify({'success': True, 'message': 'Medication scheduled successfully!'})
 
     except Exception as e:
-        print("🚨 Unexpected Error:", str(e))
+        print("Unexpected Error:", str(e))
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
 
 
-
+@app.route('/get_schedules', methods=['GET'])
+def get_schedules_api():
+    schedules = get_schedules_for_dispenser()
+    return jsonify(schedules), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

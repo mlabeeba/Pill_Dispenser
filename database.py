@@ -41,7 +41,13 @@ def get_alerts_by_patient(patient_id):
     response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else []
 
-
+def save_schedule():
+    data = {
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    response = supabase.table('schedules').insert(data).execute()
+    return response
 def get_all_alerts():
     response = supabase.table('alerts').select("*").order('date', desc=True).execute()
     return response.data
@@ -114,3 +120,7 @@ def get_schedules_by_patient(patient_id):
     response = supabase.table('schedule').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else []
 
+def get_schedules_for_dispenser():
+    # fetch all schedules
+    response = supabase.table('schedule').select('*').execute()
+    return response.data if response.data else []
