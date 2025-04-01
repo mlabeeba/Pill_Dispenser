@@ -24,6 +24,10 @@
             <label for="scheduleEndDate">End Date:</label>
             <input type="date" id="scheduleEndDate" name="scheduleEndDate" required>
 
+            <label for="doseNumber">Dose:</label>
+            <input type="number" id="doseNumber" name="doseNumber" min="1" required>
+
+
             <div class="tab">
                 <button type="button" class="tablinks" data-type="time">Schedule Time</button>
                 <button type="button" class="tablinks" data-type="interval">Schedule Interval</button>
@@ -31,7 +35,7 @@
 
             <div id="time" class="tabcontent">
                 <label for="scheduleTime">Select Time:</label>
-                <input type="time" id="scheduleTime" name="scheduleTime">
+                <input type="time" id="scheduleTime" name="scheduleTime" step="60">
             </div>
 
             <div id="interval" class="tabcontent">
@@ -119,6 +123,17 @@
             // Apply rule on load
             enforceOneSelection();
         });
+
+
+        const timeInput = document.getElementById('scheduleTime');
+        timeInput.addEventListener('input', () => {
+            const value = timeInput.value;
+            if (value.toLowerCase().includes('am') || value.toLowerCase().includes('pm')) {
+                alert('Please use 24-hour format (e.g., 13:30).');
+                timeInput.value = '';
+            }
+        });
+
     </script>
 
 {% endblock %}

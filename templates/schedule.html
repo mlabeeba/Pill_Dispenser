@@ -1,9 +1,365 @@
-<!-- templates/schedule.html -->
 {% extends "layout.html" %}
 
-{% block title %}Schedules{% endblock %}
+{% block title %}Manage Schedule{% endblock %}
 
 {% block content %}
-    <h2>View Schedules</h2>
-    <p>This is where the pharmacist can view or manage schedules.</p>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manage Schedule</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='med-style.css') }}">
+        <script src="{{ url_for('static', filename='popup.js') }}"></script>
+    </head>
+
+    <style>
+        #calendar-container td {
+            padding: 0.4rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #calendar-container td:hover {
+            background-color: #f2f2f2;
+        }
+
+        #calendar-container td.today {
+            background-color: #e0f7ff;
+            font-weight: bold;
+        }
+
+
+    </style>
+
+    <div class="container">
+        <h2>Manage Schedule</h2>
+
+        <div class="dropdown-container">
+            <div class="dropdown">
+                <label for="patient">Patient:</label>
+                <select id="patient" name="patient">
+                    {% for patient in patient_names %}
+                        <option value="{{ patient.patient_id }}"
+                                {% if patient.patient_id == current_patient_id %}selected{% endif %}>
+                            {{ patient.patient_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="med-table-container" style="width: 100%;">
+                <div class="med-heading-container" style="justify-content: flex-start;">
+                    <h4>Schedule Overview</h4>
+                </div>
+
+                <div class="table-section" style="width: 100%;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Medication</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Schedule Time</th>
+                            <th>Interval Time</th>
+                            <th>Dose</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="schedule-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align:center;">Loading...</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+            <div id="calendar-container" style="
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1rem;
+        max-width: 280px;
+        font-size: 0.85rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        margin-top: 90px;  /* ensures vertical alignment */
+        margin-left: 50px;
+        margin-right: -40px;
+    ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <button id="prev-month" style="border: none; background: none; font-size: 1.2rem;">←</button>
+                    <select id="year-select" style="font-size: 0.85rem;"></select>
+                    <button id="next-month" style="border: none; background: none; font-size: 1.2rem;">→</button>
+                </div>
+                <h4 id="calendar-month" style="text-align: center; margin: 0.2rem 0 0.8rem;"></h4>
+                <table id="calendar" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th>Su</th>
+                        <th>Mo</th>
+                        <th>Tu</th>
+                        <th>We</th>
+                        <th>Th</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                    </tr>
+                    </thead>
+                    <tbody id="calendar-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const patientDropdown = document.getElementById('patient');
+            const tableBody = document.getElementById('schedule-table-body');
+
+            function loadSchedule(patientId) {
+                fetch(`/get_schedules/${patientId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        tableBody.innerHTML = '';
+
+                        if (!data.length) {
+                            tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: gray;">
+                                    No schedules found for this patient.
+                                </td>
+                            </tr>`;
+                            return;
+                        }
+
+                        data.forEach((schedule, index) => {
+                            const intervalDisplay = schedule.interval_value && schedule.interval_unit
+                                ? `${schedule.interval_value} ${schedule.interval_unit}`
+                                : '—';
+
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${schedule.med_name || '—'}</td>
+                            <td>${schedule.start_date || '—'}</td>
+                            <td>${schedule.end_date || '—'}</td>
+                            <td>${schedule.schedule_time || '—'}</td>
+                            <td>${intervalDisplay}</td>
+                            <td>${schedule.dose || '—'}</td>
+                        `;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(err => {
+                        console.error('❌ Failed to load schedules:', err);
+                        tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: red;">
+                                Error loading schedules.
+                            </td>
+                        </tr>`;
+                    });
+            }
+
+            patientDropdown.addEventListener('change', () => {
+                const selectedId = patientDropdown.value;
+                sessionStorage.setItem('selectedPatientId', selectedId);
+                loadSchedule(selectedId);
+            });
+
+            const storedId = sessionStorage.getItem('selectedPatientId');
+            const firstOption = patientDropdown.options[0];
+
+            if (storedId && [...patientDropdown.options].some(opt => opt.value === storedId)) {
+                patientDropdown.value = storedId;
+            } else if (firstOption) {
+                patientDropdown.value = firstOption.value;
+                sessionStorage.setItem('selectedPatientId', firstOption.value);
+            }
+
+            patientDropdown.dispatchEvent(new Event('change'));
+        });
+
+
+
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const patientDropdown = document.getElementById('patient');
+            const tableBody = document.getElementById('schedule-table-body');
+
+            // Load schedule data for selected patient
+            function loadSchedule(patientId) {
+                fetch(`/get_schedules/${patientId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = '';
+
+                        if (!data.length) {
+                            tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: gray;">
+                                    No schedules found for this patient.
+                                </td>
+                            </tr>`;
+                            return;
+                        }
+
+                        data.forEach((item, index) => {
+                            const intervalDisplay = item.interval_value && item.interval_unit
+                                ? `${item.interval_value} ${item.interval_unit}`
+                                : '—';
+
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.med_name || '—'}</td>
+                            <td>${item.start_date || '—'}</td>
+                            <td>${item.end_date || '—'}</td>
+                            <td>${item.schedule_time || '—'}</td>
+                            <td>${intervalDisplay}</td>
+                            <td>${item.dose || '—'}</td>
+                        `;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('❌ Failed to load schedule:', error);
+                        tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: red;">
+                                Error loading schedules.
+                            </td>
+                        </tr>`;
+                    });
+            }
+
+            // Handle dropdown change
+            patientDropdown.addEventListener('change', () => {
+                const selectedId = patientDropdown.value;
+                sessionStorage.setItem('selectedPatientId', selectedId);
+                loadSchedule(selectedId);
+            });
+
+            // On initial load, auto-select stored or first patient
+            const storedId = sessionStorage.getItem('selectedPatientId');
+            const firstOption = patientDropdown.options[0];
+
+            if (storedId && [...patientDropdown.options].some(opt => opt.value === storedId)) {
+                patientDropdown.value = storedId;
+            } else if (firstOption) {
+                patientDropdown.value = firstOption.value;
+                sessionStorage.setItem('selectedPatientId', firstOption.value);
+            }
+
+            // Trigger change manually to load table
+            patientDropdown.dispatchEvent(new Event('change'));
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calendarBody = document.getElementById('calendar-body');
+            const calendarMonth = document.getElementById('calendar-month');
+            const yearSelect = document.getElementById('year-select');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+
+            let today = new Date();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
+
+            function populateYearDropdown() {
+                const current = new Date().getFullYear();
+                for (let y = current - 10; y <= current + 10; y++) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    if (y === currentYear) opt.selected = true;
+                    yearSelect.appendChild(opt);
+                }
+            }
+
+            function renderCalendar(month, year) {
+                calendarBody.innerHTML = '';
+                const monthNames = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                calendarMonth.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                let date = 1;
+                for (let i = 0; i < 6; i++) {
+                    const row = document.createElement('tr');
+
+                    for (let j = 0; j < 7; j++) {
+                        const cell = document.createElement('td');
+                        if (i === 0 && j < firstDay) {
+                            cell.textContent = '';
+                        } else if (date > daysInMonth) {
+                            break;
+                        } else {
+                            cell.textContent = date;
+                            if (
+                                date === today.getDate() &&
+                                year === today.getFullYear() &&
+                                month === today.getMonth()
+                            ) {
+                                cell.classList.add('today');
+                            }
+
+                            date++;
+                        }
+                        row.appendChild(cell);
+                    }
+
+                    calendarBody.appendChild(row);
+                    if (date > daysInMonth) break;
+                }
+            }
+
+            yearSelect.addEventListener('change', () => {
+                currentYear = parseInt(yearSelect.value);
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            prevMonthBtn.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                    yearSelect.value = currentYear;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                    yearSelect.value = currentYear;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+
+            populateYearDropdown();
+            renderCalendar(currentMonth, currentYear);
+        });
+    </script>
+
+
+
+
 {% endblock %}

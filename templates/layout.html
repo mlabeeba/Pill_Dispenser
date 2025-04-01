@@ -10,22 +10,22 @@
 <nav>
     <ul class="logo-container">
         <li class="logo">
-            <h1 style="font-weight: lighter";>Smart Prescription Dispenser</h1>
+            <h1>Smart Prescription Dispenser</h1>
         </li>
-        <ul class="nav-links">
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('medications') }}">Medication</a></li>
-            <li><a href="{{ url_for('schedule') }}">Schedules</a></li>
-            <li><a href="{{ url_for('alerts') }}">Alerts</a></li>
-            <li><a href="{{ url_for('managepatients') }}">Manage Patients</a></li>
-        </ul>
     </ul>
-
+    <ul class="nav-links">
+        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('medications') }}">Medication</a></li>
+        <li><a href="{{ url_for('schedule') }}">Schedules</a></li>
+        <li><a href="{{ url_for('alerts') }}">Alerts</a></li>
+        <li><a href="{{ url_for('managepatients') }}">Manage Patients</a></li>
+    </ul>
     <ul class="profile-logout-buttons">
         <li><a href="{{ url_for('myprofile') }}" class="profile-btn">My Profile</a></li>
         <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
     </ul>
 </nav>
+
 
 <div class="content">
     {% block content %}{% endblock %}

@@ -8,17 +8,21 @@ html, body {
     flex-direction: column;
     overflow-y: hidden; /* Prevent horizontal scrolling */
     overflow-x: hidden;
+    background: linear-gradient(360deg, #ffffff, #ECF4F6);
+
 }
 
-/* main content */
+/* main content*/
 .content {
     flex-grow: 1;
-    padding: 20px;
+    padding: 10px;
+     margin-left: -80px;
 }
 
 h2 {
     margin-top: 20px;
 }
+
 
 .container {
     max-width: 1200px;
@@ -28,92 +32,89 @@ h2 {
 
 /* Navigation Bar */
 nav {
-    background-color: #D9D9D9;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    background-color: #ffffff;
+    margin: 40px auto;
+    padding: 16px 32px;
+    max-width: 95%;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Space between logo, nav links, and buttons */
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 999;
 }
 
-/* For Logo */
+/* Logo */
 .logo-container {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
 }
 
-/* Logo Styling */
 .logo-container .logo h1 {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 20px;
+    font-weight: 700;
+    color: #183E55;
     margin: 0;
-    border-right: 1.5px solid black;
-    padding: 5px 30px;
+    padding-right: 30px;
+    border-right: 2px solid #e0e0e0;
 }
 
-/* Navigation Links */
+/* Nav Links */
 .nav-links {
     list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
-    align-items: center;
-    padding-left: 5px;
+    gap: 24px;
+    margin: 0;
+    padding: 0 30px;
 }
 
-.nav-links li {
-    margin-left: 30px;
-}
-
-/* Nav Link Styling */
 .nav-links li a {
-    color: #8B8B8B;
+    color: #183E55;
     text-decoration: none;
+    font-weight: 500;
     font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
 }
 
 .nav-links li a:hover {
-    color: black;
+    background-color: #ECF4F6;
+    color: #183E55;
 }
 
 /* Profile and Logout Buttons */
 .profile-logout-buttons {
     list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding-right: 40px;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
 }
 
-.profile-btn, .logout-btn {
-    background-color: white;
-    border: 1px solid #333;
-    border-radius: 20px;
-    padding: 10px 25px;
+.profile-btn,
+.logout-btn {
+    border: none;
+    background-color: #ECF4F6;
+    color: #183E55;
+    padding: 8px 20px;
+    border-radius: 999px;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     text-decoration: none;
-    color: black;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.profile-btn:hover, .logout-btn:hover {
-    background-color: #eee;
-    text-decoration: underline;
+.profile-btn:hover,
+.logout-btn:hover {
+    background-color: #CEE5E8;
+    text-decoration: none;
 }
-
-nav ul li.logo {
-    margin-right: auto;
-}
-
-nav ul li.logo h1 {
-    color: black;
-    margin: 0;
-    font-size: 24px;
-    font-weight: bold;
-}
-
