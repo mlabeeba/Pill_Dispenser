@@ -329,5 +329,10 @@ def get_schedules_api():
     schedules = get_schedules_for_dispenser()
     return jsonify(schedules), 200
 
+@app.route('/debug/routes', methods=['GET'])
+def list_routes():
+    routes = [str(rule) for rule in app.url_map.iter_rules()]
+    return jsonify(routes), 200
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
