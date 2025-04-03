@@ -1,6 +1,6 @@
 
 import secrets
-from datetime import date
+from datetime import date, datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 
@@ -109,28 +109,26 @@ def alerts():
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
-    # Assuming you have a function to get all patients assigned to a pharmacist
-    # Modify according to your actual function and data structure
-    #my_patients = get_all_patients()  # This function should return all relevant patient data
-    selected_patient_id = request.args.get('patient_id', type=int)
-
-    alerts_data = []
-    if selected_patient_id:
-        alerts_data = get_alerts_by_patient(selected_patient_id)
-
-    # Format alerts data if needed
-    for alert in alerts_data:
-        alert['date'] = alert['date'].strftime("%Y-%m-%d") if isinstance(alert['date'], date) else alert['date']
-
     my_patients = get_my_patients(session['pharmacist_id']) or []
     patient = my_patients[0] if my_patients else None
     alert_list = get_alerts_by_patient(patient['patient_id']) if patient else []
+
+    for alert in alert_list:
+        timestamp = datetime.fromisoformat(alert['timestamp'].replace("Z", "+00:00"))
+        formatted_time = timestamp.strftime('%Y-%m-%d %I:%M %p')
+        alert['timestamp'] = formatted_time
 
     return render_template('alerts.html', patient_names=my_patients, alerts=alert_list)
 
 @app.route('/get_alerts/<int:patient_id>')
 def get_alerts(patient_id):
     alert_list = get_alerts_by_patient(patient_id)
+
+    for alert in alert_list:
+        timestamp = datetime.fromisoformat(alert['timestamp'].replace("Z", "+00:00"))
+        formatted_time = timestamp.strftime('%Y-%m-%d %I:%M %p')
+        alert['timestamp'] = formatted_time
+
     return jsonify(alert_list)
 
 @app.route('/managepatients')
@@ -302,6 +300,7 @@ def schedule_medication():
         med_id = request.form.get('medication')  # ✅ NEW
         patient_id = session.get('current_patient_id')
         pharmacist_id = session.get('pharmacist_id')
+        dose = request.form.get('doseNumber')
 
         if not all([start_date, end_date, patient_id, pharmacist_id, med_id]):
             return jsonify({'success': False, 'message': 'Missing required fields'}), 400
@@ -311,7 +310,8 @@ def schedule_medication():
             'pharmacist_id': pharmacist_id,
             'start_date': start_date,
             'end_date': end_date,
-            'med_id': int(med_id)  # ✅ Include med_id
+            'med_id': int(med_id),  # ✅ Include med_id
+            'dose': dose
         }
 
         if schedule_time:

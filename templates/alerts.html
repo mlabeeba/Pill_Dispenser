@@ -38,12 +38,11 @@
                             <th>Type of Alert</th>
                         </tr>
                         </thead>
-
                         <tbody id="alerts-table-body">
                         {% for alert in alerts %}
                             <tr>
                                 <td>{{ alert.alert_id }}</td>
-                                <td>{{ alert.date }}</td>
+                                <td>{{ alert.timestamp }}</td>
                                 <td>{{ alert.type }}</td>
                             </tr>
                         {% else %}
@@ -95,8 +94,6 @@
                             <td>${alert.alert_id}</td>
                             <td>${alert.timestamp}</td>
                             <td>${alert.type}</td>
-                            <td>${alert.acknowledge}</td>
-                            <td>${alert.alert_notes}</td>
                         `;
                             tableBody.appendChild(row);
 
