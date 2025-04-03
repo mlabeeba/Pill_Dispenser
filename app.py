@@ -302,6 +302,7 @@ def schedule_medication():
         med_id = request.form.get('medication')  # ✅ NEW
         patient_id = session.get('current_patient_id')
         pharmacist_id = session.get('pharmacist_id')
+        dose = request.form.get('doseNumber')
 
         if not all([start_date, end_date, patient_id, pharmacist_id, med_id]):
             return jsonify({'success': False, 'message': 'Missing required fields'}), 400
@@ -311,7 +312,8 @@ def schedule_medication():
             'pharmacist_id': pharmacist_id,
             'start_date': start_date,
             'end_date': end_date,
-            'med_id': int(med_id)  # ✅ Include med_id
+            'med_id': int(med_id),  # ✅ Include med_id
+            'dose': dose
         }
 
         if schedule_time:
