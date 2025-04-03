@@ -43,9 +43,11 @@ h2 {
 .alert-history ul {
     list-style-type: none;
     border: 1px solid #ccc;
-    padding-bottom: 400px;
+    padding: 10px;
     border-radius: 4px;
     background-color: #fff;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 /* Main Content Container */
@@ -59,7 +61,7 @@ h2 {
 }
 
 .alert-history {
-    width: 250px;
+    width: 200px;
     margin-left: 40px;
 }
 
