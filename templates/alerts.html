@@ -60,7 +60,7 @@
                     <h3>Alert History</h3>
                     <ul id="alert-history-list">
                         {% for alert in alerts %}
-                            <li>{{ alert['date'] }} - {{ alert['type'] }}</li>
+                            <li>{{ alert['timestamp'] }} - {{ alert['type'] }}</li>
                         {% else %}
                             <li>No alerts found in history.</li>
                         {% endfor %}
@@ -93,7 +93,7 @@
                             const row = document.createElement('tr');
                             row.innerHTML = `
                             <td>${alert.alert_id}</td>
-                            <td>${alert.date}</td>
+                            <td>${alert.timestamp}</td>
                             <td>${alert.type}</td>
                             <td>${alert.acknowledge}</td>
                             <td>${alert.alert_notes}</td>
@@ -101,7 +101,7 @@
                             tableBody.appendChild(row);
 
                             const listItem = document.createElement('li');
-                            listItem.textContent = `${alert.date} - ${alert.type}`;
+                            listItem.textContent = `${alert.timestamp} - ${alert.type}`;
                             alertList.appendChild(listItem);
                         });
                     } else {
