@@ -28,8 +28,11 @@ def dashboard():
         flash('Error fetching pharmacist details.', 'danger')
         return redirect(url_for('login'))
 
+    my_patients = get_my_patients(session['pharmacist_id']) or []
+    total_patients = len(my_patients)  # Count the number of patients
+
     pharmacist_name = user.get('pharmacist_name', 'Pharmacist')
-    return render_template('dashboard.html', pharmacist_name=pharmacist_name, patient_names=patient_names)
+    return render_template('dashboard.html', pharmacist_name=pharmacist_name, patient_names=patient_names, total_patients=total_patients)
 
 
 @app.route('/medications', methods=['GET', 'POST'])
@@ -68,9 +71,16 @@ def schedule():
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
-    current_patient_id = session.get('current_patient_id')
-    schedule_entries = get_schedules_by_patient(current_patient_id) if current_patient_id else []
-    return render_template('schedule.html', schedule_entries=schedule_entries)
+    my_patients = get_my_patients(session['pharmacist_id']) or []
+    patient = my_patients[0] if my_patients else None
+    schedule_list = get_schedules_by_patient(patient['patient_id']) if patient else []
+    session['current_patient_id'] = patient['patient_id'] if patient else None
+
+    return render_template('schedule.html',
+                           patient_names=my_patients,
+                           schedules=schedule_list,
+                           current_patient_id=session['current_patient_id'])
+
 
 
 @app.route('/myprofile')
@@ -289,18 +299,19 @@ def schedule_medication():
         schedule_time = request.form.get('scheduleTime') or None
         interval_value = request.form.get('intervalValue') or None
         interval_unit = request.form.get('intervalUnit') or None
+        med_id = request.form.get('medication')  # ✅ NEW
         patient_id = session.get('current_patient_id')
-        pharmacist_id = session.get('pharmacist_id')  # This is a UUID, don't convert it to int
+        pharmacist_id = session.get('pharmacist_id')
 
-        if not all([start_date, end_date, patient_id, pharmacist_id]):
+        if not all([start_date, end_date, patient_id, pharmacist_id, med_id]):
             return jsonify({'success': False, 'message': 'Missing required fields'}), 400
 
-        # Prepare data for insertion, excluding None values
         data_to_insert = {
-            'patient_id': int(patient_id),  # Keep patient_id as an integer
-            'pharmacist_id': pharmacist_id,  # Keep pharmacist_id as a UUID string
+            'patient_id': int(patient_id),
+            'pharmacist_id': pharmacist_id,
             'start_date': start_date,
-            'end_date': end_date
+            'end_date': end_date,
+            'med_id': int(med_id)  # ✅ Include med_id
         }
 
         if schedule_time:
@@ -310,7 +321,6 @@ def schedule_medication():
             data_to_insert['interval_value'] = int(interval_value)
             data_to_insert['interval_unit'] = interval_unit
 
-        # Insert into Supabase
         response = supabase.table('schedule').insert(data_to_insert).execute()
 
         if 'error' in response:
@@ -324,10 +334,24 @@ def schedule_medication():
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
 
 
-@app.route('/get_schedules', methods=['GET'])
-def get_schedules_api():
-    schedules = get_schedules_for_dispenser()
-    return jsonify(schedules), 200
+
+@app.route('/get_schedules/<int:patient_id>')
+def get_schedules(patient_id):
+    session['current_patient_id'] = patient_id
+    schedule_list = get_schedules_by_patient(patient_id)
+    return jsonify(schedule_list)
+
+
+@app.errorhandler(APIError)
+def handle_supabase_errors(error):
+    if "JWT expired" in str(error):
+        print("⚠️ JWT expired – redirecting to login.")
+        session.clear()
+        flash("Session expired. Please log in again.", "warning")
+        return redirect(url_for("login"))
+
+    # Otherwise, let Flask handle it like a regular 500 error
+    return str(error), 500
 
 @app.route('/debug/routes', methods=['GET'])
 def list_routes():

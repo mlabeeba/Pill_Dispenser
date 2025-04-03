@@ -1,5 +1,8 @@
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from postgrest.exceptions import APIError
+from flask import session, redirect, url_for
+from flask import session
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -7,6 +10,7 @@ load_dotenv()  # Load environment variables from .env file
 supabase_url = 'https://exavfgktkvnuywmxxyib.supabase.co'
 supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YXZmZ2t0a3ZudXl3bXh4eWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3Njc3MzMsImV4cCI6MjA1MDM0MzczM30.Jo7wk4P-EMzGsy2n1TAb4PNuX7QGp3uS-YIDOj_4xBo'  # Replace with your Supabase secret key
 supabase: Client = create_client(supabase_url, supabase_key)
+
 
 # Fetch patient names
 def get_all_patient_names():
@@ -41,13 +45,15 @@ def get_alerts_by_patient(patient_id):
     response = supabase.table('alerts').select('*').eq('patient_id', patient_id).execute()
     return response.data if response.data else []
 
-def save_schedule():
+def save_schedule(start_date, end_date):
     data = {
         'start_date': start_date,
         'end_date': end_date,
     }
     response = supabase.table('schedules').insert(data).execute()
     return response
+
+
 def get_all_alerts():
     response = supabase.table('alerts').select("*").order('date', desc=True).execute()
     return response.data
@@ -116,11 +122,34 @@ def check_user_exists(email):
     pass
 
 
-def get_schedules_by_patient(patient_id):
-    response = supabase.table('schedule').select('*').eq('patient_id', patient_id).execute()
-    return response.data if response.data else []
-
 def get_schedules_for_dispenser():
     # fetch all schedules
     response = supabase.table('schedule').select('*').execute()
     return response.data if response.data else []
+
+
+def get_schedules_by_patient(patient_id):
+    # Step 1: Query the actual 'schedule' table (not 'schedules')
+    schedule_response = supabase.table('schedule').select('*').eq('patient_id', patient_id).execute()
+    schedules = schedule_response.data if schedule_response.data else []
+
+    if not schedules:
+        return []
+
+    # Step 2: Collect all unique med_ids
+    med_ids = list({s['med_id'] for s in schedules if 'med_id' in s and s['med_id'] is not None})
+
+    # Step 3: Get medication names
+    meds_map = {}
+    if med_ids:
+        meds_response = supabase.table('medications').select('med_id, med_name').in_('med_id', med_ids).execute()
+        meds = meds_response.data or []
+        meds_map = {m['med_id']: m['med_name'] for m in meds}
+
+    # Step 4: Append med_name to each schedule entry
+    for sched in schedules:
+        sched['med_name'] = meds_map.get(sched.get('med_id'), '—')
+
+    return schedules
+
+

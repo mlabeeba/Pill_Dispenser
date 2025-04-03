@@ -1,6 +1,5 @@
 /* Add Medication Button */
 // ---------------------- /
-
 // Add an event listener for the "Add" button
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("add-med-btn")) {

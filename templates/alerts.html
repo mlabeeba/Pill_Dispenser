@@ -36,8 +36,6 @@
                             <th>#</th>
                             <th>Date</th>
                             <th>Type of Alert</th>
-                            <th>Acknowledge</th>
-                            <th>Notes</th>
                         </tr>
                         </thead>
 
@@ -47,12 +45,10 @@
                                 <td>{{ alert.alert_id }}</td>
                                 <td>{{ alert.date }}</td>
                                 <td>{{ alert.type }}</td>
-                                <td>{{ alert.acknowledge }}</td>
-                                <td>{{ alert.alert_notes }}</td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="5">No alerts found.</td>
+                                <td colspan="3">No alerts found.</td>
                             </tr>
                         {% endfor %}
                         </tbody>
