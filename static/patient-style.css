@@ -1,128 +1,235 @@
+/* ---------- Page Container ---------- */
 .manage-patients-container {
-    color: white;
-    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
 }
 
-h1 {
-    color: black;
-    margin-bottom: 50px;
-    padding-left: 30px;
-}
-
-
-.search-bar input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    margin-left: 10px;
-    text-decoration: none;
-    border-color: black;
-    border-radius: 40px;
-    border-width: 1px;
-}
-
-.search-bar button {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.patients-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    color: black;
+/* ---------- Headings ---------- */
+h2 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 60px;
+    color: #0f172a; /* rich dark navy */
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.06);
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease-in-out;
+    position: relative;
 
 }
 
-.patients-table th, .patients-table td {
-    padding: 15px;
-    border: 1px solid #ccc;
-    text-align: left;
+h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 6px;
+    background: linear-gradient(to right, #116caf, #3ad9ed);
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
-.actions {
-    margin-top: 15px;
-}
 
-.edit-btn, .add-btn, .remove-btn {
-    background: #f0f0f0;
-    border: none;
-    padding: 10px;
-    margin-right: 5px;
-    cursor: pointer;
-}
+/* ---------- Search Bar ---------- */
 
-.search-bar {
-    display: flex;
-    align-items: center;
-    background-color: #f0f0f0;       /* Light gray background for the search bar */
-    border-radius: 25px;             /* Rounded corners for the search bar */
-    padding: 5px;
-    width: 96%;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-    margin-left: 20px;
-
-}
 
 #searchPatient {
-    flex: 1;                         /* Expands the input to take available space */
-    border: none;                    /* Remove default border */
-    outline: none;                   /* Remove default outline */
-    padding: 10px 15px;              /* Inner padding for text */
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 15px;
     font-size: 16px;
-    border-radius: 25px 0 0 25px;    /* Rounded corners on the left */
 }
 
 .search-btn {
     display: flex;
     align-items: center;
-    background-color: #ffffff;       /* White background for the button */
-    border: none;                    /* Remove border */
-    padding: 10px 15px;              /* Padding for clickable area */
+    background-color: #ffffff;
+    border: none;
+    padding: 10px 15px;
     cursor: pointer;
     font-size: 16px;
-    color: #333;                     /* Text color */
-    border-radius: 0 25px 25px 0;    /* Rounded corners on the right */
-    box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.1); /* Inner shadow for the button */
+    color: #333;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
 }
 
 .search-btn:hover {
-    background-color: #cccccc;
+    background-color: #d8eefd;
 }
 
 .search-icon {
-    width: 16px;                     /* Set icon size */
-    height: 16px;
-    margin-right: 5px;               /* Space between icon and text */
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
 }
 
+/* ---------- Table Styling ---------- */
+.patients-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    font-size: 15px;
+
+}
+
+.patients-table th {
+    padding: 16px 20px;
+    font-weight: 700;
+    text-align: left;
+   border-bottom: 2px solid rgba(58, 217, 237, 0.93);
+    letter-spacing: 0.4px;
+    color: white;
+    background-color: rgba(24, 62, 85, 0.94);
+}
+
+.patients-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #333;
+    vertical-align: top;
+}
+
+.patients-table tr:hover {
+    background-color: #f4faff;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.patients-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---------- Button Group + Add Button ---------- */
 .btn-group {
-    display: flex;       /* Enables flexbox layout */
-    justify-content: space-between; /* Aligns the first item to the left and the second item to the right */
-    align-items: center; /* Vertically center the items in the container */
-    width: 100%;         /* Ensures the container spans the full width of its parent */
-    padding-top: 40px;   /* Keeps original padding from your setup */
-}
-
-.add-patient-btn {
-    padding: 10px 40px;  /* Uniform padding for better button appearance */
-    cursor: pointer;     /* Indicates the element is clickable */
-    background-color: #F4F4F4;
-    border: 1px solid #333;
-    border-radius: 10px;
-    padding: 10px 25px;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    color: black;
-}
-
-.add-patient-btn:hover {
-    background-color: #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 15px;
 }
 
 h4 {
-    margin: 0; /* Ensures no extra space around the heading */
-    color: black; /* Text color for the heading */
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: #0f172a;
+}
+
+.add-patient-btn {
+    background: #ffffff;
+    color: #1a202c;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 0 8px rgba(173, 216, 230, 0.3);
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.add-patient-btn:hover {
+    background: linear-gradient(-190deg, #d9f3f8, #BDE6F0);
+    transform: translateY(-2px);
+}
+
+.add-patient-btn:active {
+    transform: scale(0.98);
+}
+
+/* ---------- Scrollable Table Container ---------- */
+.scrollable-patients {
+    max-height: 260px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 10px;
+    width: 100%; /* ⬅ Make it full width of its parent */
+    max-width: 1000px; /* ⬅ Optional: control how wide it goes */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.patients-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    width: 100%;
+    margin: 20px auto 0 auto; /* center it and space from search bar */
+    padding: 0 10px;
+}
+
+
+/* Optional: Smooth custom scroll */
+.scrollable-patients::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-patients::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.manage-patients-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    margin-top: -55px;
+    margin-left: 50px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 8px 16px;
+  border-radius: 40px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 0 30px rgba(189, 230, 240, 0.81); /* Blue glow */
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  gap: 12px;
+    margin-top: -20px;
+    margin-bottom: 60px;
+}
+
+
+.search-bar input[type="text"] {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 12px 16px;
+  background-color: transparent;
+  color: #333;
+}
+
+.search-bar .search-btn {
+  background-color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 25px;
+  cursor: pointer;
+  color: #111;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.search-bar .search-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.search-bar .search-btn i {
+  margin-right: 6px;
 }

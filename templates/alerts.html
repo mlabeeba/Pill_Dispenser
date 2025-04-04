@@ -12,111 +12,223 @@
     </head>
 
     <div class="container">
-        <h2>Alerts!</h2>
+        <div class="alert-wrapper">
+            <h2>Alerts!</h2>
 
-        <div class="dropdown-container">
-            <div class="dropdown">
-                <label for="patient">Patient:</label>
-                <select id="patient" name="patient">
-                    {% for patient in patient_names %}
-                        <option value="{{ patient.patient_id }}">{{ patient.patient_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="main-content-container">
-
-                <div class=alert-table>
-                    <h3>Recent Alerts</h3>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Type of Alert</th>
-                        </tr>
-                        </thead>
-                        <tbody id="alerts-table-body">
-                        {% for alert in alerts %}
-                            <tr>
-                                <td>{{ alert.alert_id }}</td>
-                                <td>{{ alert.timestamp }}</td>
-                                <td>{{ alert.type }}</td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="3">No alerts found.</td>
-                            </tr>
+            <div class="dropdown-container">
+                <div class="dropdown">
+                    <label for="patient">Patient:</label>
+                    <select id="patient" name="patient">
+                        {% for patient in patient_names %}
+                            <option value="{{ patient.patient_id }}">{{ patient.patient_name }}</option>
                         {% endfor %}
-                        </tbody>
-                    </table>
-
+                    </select>
                 </div>
+            </div>
 
-                <div class="alert-history">
-                    <h3>Alert History</h3>
-                    <ul id="alert-history-list">
-                        {% for alert in alerts %}
-                            <li>{{ alert['timestamp'] }} - {{ alert['type'] }}</li>
-                        {% else %}
-                            <li>No alerts found in history.</li>
-                        {% endfor %}
-                    </ul>
+            <div class="main-content">
+                <h4>Recent Alerts</h4>
+                <div class="main-content-container">
+                    <div class="alerts-layout-row">
+                        <!-- Table Column -->
+                        <div class="alert-table">
+                            <div class="scrollable-alerts">
+                                <table>
+                                    <thead class="alert-table-header">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>Type of Alert</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="alerts-table-body">
+                                    {% for alert in alerts %}
+                                        <tr>
+                                            <td>{{ alert.alert_id }}</td>
+                                            <td>{{ alert.timestamp }}</td>
+                                            <td>{{ alert.type }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3">No alerts found.</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Calendar Column -->
+                        <div class="calendar-widget">
+                            <div class="calendar-header">
+                                <button id="prev-month">←</button>
+                                <select id="month-select"></select>
+                                <select id="year-select"></select>
+                                <button id="next-month">→</button>
+                            </div>
+                            <table class="calendar-body">
+                                <thead>
+                                <tr>
+                                    <th>Su</th>
+                                    <th>Mo</th>
+                                    <th>Tu</th>
+                                    <th>We</th>
+                                    <th>Th</th>
+                                    <th>Fr</th>
+                                    <th>Sa</th>
+                                </tr>
+                                </thead>
+                                <tbody id="calendar-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+<script>
+    const patientDropdown = document.getElementById('patient');
+    const tableBody = document.getElementById('alerts-table-body');
 
-    <script>
-        const patientDropdown = document.getElementById('patient');
-        const tableBody = document.getElementById('alerts-table-body');
-        const alertList = document.getElementById('alert-history-list');
+    // Listen for change in the dropdown
+    patientDropdown.addEventListener('change', function () {
+        const patientId = patientDropdown.value;
 
-        // Listen for change in the dropdown
-        patientDropdown.addEventListener('change', function () {
-            const patientId = patientDropdown.value; // Get selected patient ID
+        // Send AJAX request
+        fetch(`/get_alerts/${patientId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing table rows
+                tableBody.innerHTML = '';
 
-            // Send an AJAX request to the server
-            fetch(`/get_alerts/${patientId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Clear existing table rows and list items
-                    tableBody.innerHTML = '';
-                    alertList.innerHTML = '';
-
-                    // Populate the table and list with new data
-                    if (data.length > 0) {
-                        data.forEach(alert => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
+                if (data.length > 0) {
+                    data.forEach(alert => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                             <td>${alert.alert_id}</td>
                             <td>${alert.timestamp}</td>
                             <td>${alert.type}</td>
                         `;
-                            tableBody.appendChild(row);
-
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `${alert.timestamp} - ${alert.type}`;
-                            alertList.appendChild(listItem);
-                        });
-                    } else {
-                        // Show message if no results
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                        <td colspan="5" style="text-align: center; color: gray;">
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="3" style="text-align: center; color: gray;">
                             No alerts found for the selected patient.
                         </td>`;
-                        tableBody.appendChild(row);
+                    tableBody.appendChild(row);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="3" style="text-align: center; color: red;">
+                        Failed to load alerts.
+                    </td>`;
+                tableBody.appendChild(row);
+            });
+    });
+</script>
 
-                        const listItem = document.createElement('li');
-                        listItem.textContent = 'No alerts found for the selected patient.';
-                        alertList.appendChild(listItem);
+
+    <script>
+        const calendarDays = document.getElementById("calendar-body");
+        const monthSelect = document.getElementById("month-select");
+        const yearSelect = document.getElementById("year-select");
+
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+
+        function generateCalendar(month, year) {
+            const firstDay = new Date(year, month, 1).getDay();
+            const numDays = new Date(year, month + 1, 0).getDate();
+            calendarDays.innerHTML = "";
+
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                let row = document.createElement("tr");
+                for (let d = 0; d < 7; d++) {
+                    let cell = document.createElement("td");
+                    if (i === 0 && d < firstDay) {
+                        cell.innerHTML = "";
+                    } else if (date > numDays) {
+                        break;
+                    } else {
+                        cell.innerHTML = date;
+                        if (
+                            year === today.getFullYear() &&
+                            month === today.getMonth() &&
+                            date === today.getDate()
+                        ) {
+                            cell.classList.add("today");
+                        }
+                        date++;
                     }
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
+                    row.appendChild(cell);
+                }
+                calendarDays.appendChild(row);
+            }
+        }
+
+        function populateSelects() {
+            for (let i = 0; i < 12; i++) {
+                let opt = document.createElement("option");
+                opt.value = i;
+                opt.text = new Date(2000, i, 1).toLocaleString("default", {month: "long"});
+                monthSelect.appendChild(opt);
+            }
+            for (let y = 2000; y <= 2100; y++) {
+                let opt = document.createElement("option");
+                opt.value = y;
+                opt.text = y;
+                yearSelect.appendChild(opt);
+            }
+            monthSelect.value = currentMonth;
+            yearSelect.value = currentYear;
+        }
+
+        populateSelects();
+        generateCalendar(currentMonth, currentYear);
+
+        monthSelect.onchange = () => {
+            currentMonth = parseInt(monthSelect.value);
+            generateCalendar(currentMonth, currentYear);
+        };
+
+        yearSelect.onchange = () => {
+            currentYear = parseInt(yearSelect.value);
+            generateCalendar(currentMonth, currentYear);
+        };
+
+        document.getElementById("prev-month").onclick = () => {
+            if (currentMonth === 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            updateCalendar();
+        };
+
+        document.getElementById("next-month").onclick = () => {
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            updateCalendar();
+        };
+
+        function updateCalendar() {
+            monthSelect.value = currentMonth;
+            yearSelect.value = currentYear;
+            generateCalendar(currentMonth, currentYear);
+        }
     </script>
 
 {% endblock %}

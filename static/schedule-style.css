@@ -140,19 +140,19 @@ tbody tr:hover {
     transition: background-color 0.2s ease-in-out;
 }
 
-thead tr:hover {
+.table-section thead tr:hover {
     background-color: transparent !important;
 }
 
-tr:last-child td {
+.table-section tr:last-child td {
     border-bottom: none;
 }
 
-th:first-child {
+.table-section th:first-child {
     border-top-left-radius: 12px;
 }
 
-th:last-child {
+.table-section th:last-child {
     border-top-right-radius: 12px;
 }
 
@@ -194,9 +194,6 @@ th:last-child {
     transition: background 0.2s ease;
 }
 
-.calendar-header button:hover {
-    background: #d0e9f7;
-}
 
 .calendar-header select {
     padding: 4px 22px 4px 8px;
