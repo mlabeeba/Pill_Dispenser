@@ -60,11 +60,10 @@ def get_all_alerts():
 
 
 # add medications to database
-def add_medication(med_name, dosage, stock, patient_id, pharmacist_id, med_notes=None):
+def add_medication(med_name, dosage, patient_id, pharmacist_id, med_notes=None):
     data = {
         'med_name': med_name,
         'dosage': dosage,
-        'stock_levels': stock,
         'patient_id': patient_id,
         'pharmacist_id': pharmacist_id
     }

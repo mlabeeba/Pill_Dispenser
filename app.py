@@ -50,9 +50,8 @@ def medications():
     if request.method == 'POST':
         med_name = request.form['medicationName']
         dosage = request.form['dosage']
-        stock = request.form['stock']
         notes = request.form['notes']
-        add_medication(med_name, dosage, stock, session['current_patient_id'], session['pharmacist_id'], notes)
+        add_medication(med_name, dosage, session['current_patient_id'], session['pharmacist_id'], notes)
 
         my_patients = get_my_patients(session['pharmacist_id'])
         medication_list = get_medications_by_patient(session['current_patient_id'])
@@ -239,7 +238,6 @@ def add_patient():
 
     return render_template('add-patient.html')
 
-
 @app.route('/update_medications', methods=['POST'])
 def update_medications():
     data = request.json
@@ -248,11 +246,9 @@ def update_medications():
         response = supabase.table('medications').update({
             'med_name': med['med_name'],
             'dosage': med['dosage'],
-            'stock_levels': med['stock_levels'],
             'med_notes': med['med_notes']
         }).eq('med_id', med['med_id']).execute()
 
-        # Check if there is an error in the response
         if 'error' in response:
             print(f"Error updating medication {med['med_id']}: {response['error']['message']}")
             results.append({'med_id': med['med_id'], 'status': 'failed', 'error': response['error']['message']})
@@ -260,6 +256,7 @@ def update_medications():
             results.append({'med_id': med['med_id'], 'status': 'success'})
 
     return jsonify({'success': True, 'results': results})
+
 
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
