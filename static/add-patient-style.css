@@ -1,11 +1,13 @@
+/* Fullscreen background with soft blur */
 .patient-popup {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -15,82 +17,85 @@
     display: flex;
 }
 
+/* Modal card styling */
 .patient-popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 300px;
-    max-height: 80%;
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    width: 420px;
+    max-height: 90vh;
     overflow-y: auto;
+    font-family: 'Segoe UI', sans-serif;
 }
 
+/* Prevent scrolling on background when modal open */
 .hide-scrolling {
     overflow: hidden;
 }
 
+/* Heading */
+h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Labels */
 label {
-    padding-right: 10px;
-    color: black ;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #333;
+    display: block;
 }
 
-.form-input {
-    display: flex;
-    padding-bottom: 25px;
-}
-
-.popup-actions {
-    display: flex;
-    justify-content: space-between; /* Align buttons side by side */
-    margin-top: 10px;
-}
-
+/* Inputs */
 input {
     width: 100%;
-    background-color: #e0e0e0;
-    border: none;
-    border-radius: 15px;
-    box-sizing: border-box;
+    padding: 10px 12px;
     font-size: 15px;
-    padding: 10px;
-}
-
-h3 {
-    padding-bottom: 20px;
-    color: black;
-}
-
-button {
-    background-color: #f8f8f8;
+    background-color: #f9fcff;
     border: 1px solid #ccc;
-    padding: 5px 10px;
-    margin: 0 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-
-button {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    padding-right: 40px;
-    background-color: white;
-    border: 1px solid #333;
     border-radius: 10px;
-    padding: 10px 25px;
-    font-size: 14px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+/* Form field wrapper */
+.form-input {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+/* Button container */
+.popup-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Pill-style modal buttons */
+.popup-actions button {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(to bottom right, #e2f3f9, #d0ebf5);
+    color: #0f172a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    text-decoration: none;
-    color: black;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
-    background-color: #eee;
-    text-decoration: underline;
+.popup-actions button:hover {
+    background: linear-gradient(to bottom right, #cce6f0, #b7dce9);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
-
-
-
