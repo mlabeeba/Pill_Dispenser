@@ -13,7 +13,8 @@
     </head>
 
     <div class="container">
-        <h2>Manage Medications</h2>
+    <div class="medications-wrapper">
+        <h2>Medication</h2>
 
         <div class="dropdown-container">
             <div class="dropdown">
@@ -33,6 +34,7 @@
         <div class="main-content">
             <div class="med-table-container">
                 <div class="med-heading-container">
+                    <div class="table-header">
                     <h4>Current Rotation</h4>
 
                     <div class="button-group">
@@ -40,6 +42,7 @@
                         <button type="button" id="editButton" onclick="toggleEdit()">Edit</button>
                         <button type="button" class="add-med-btn">Add</button>
                     </div>
+                        </div>
                 </div>
 
                 <div class="table-section">
@@ -48,12 +51,11 @@
                             <th>#</th>
                             <th>Medication Name</th>
                             <th>Dosage</th>
-                            <th>Stock Levels</th>
                             <th>Notes</th>
                         </tr>
                         <tbody id="medications-table-body">
                         <tr>
-                            <td colspan="5" style="text-align: center;">Please select a patient to view medications.
+                            <td colspan="4" style="text-align: center;">Please select a patient to view medications.
                             </td>
                         </tr>
                         </tbody>
@@ -79,6 +81,8 @@
             <div class="schedule-popup-content"></div>
         </div>
     </div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -104,8 +108,7 @@
                         med_id: row.cells[0].textContent,
                         med_name: cells[0].textContent,
                         dosage: cells[1].textContent,
-                        stock_levels: cells[2].textContent,
-                        med_notes: cells[3].textContent
+                        med_notes: cells[2].textContent
                     });
                 });
 
@@ -153,7 +156,8 @@
                         if (data.length > 0) {
                             data.forEach(med => {
                                 const row = document.createElement('tr');
-                                row.innerHTML = `<td>${med.med_id}</td><td class="editable">${med.med_name}</td><td class="editable">${med.dosage}</td><td class="editable">${med.stock_levels}</td><td class="editable">${med.med_notes}</td>`;
+                                row.innerHTML = `<td>${med.med_id}</td><td class="editable">${med.med_name}</td><td class="editable">${med.dosage}</td><td class="editable">${med.med_notes}</td>`;
+
                                 tableBody.appendChild(row);
 
                                 const listItem = document.createElement('li');

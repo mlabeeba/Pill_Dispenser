@@ -3,45 +3,19 @@ body {
     background: linear-gradient(to bottom right, #f8fcff, #e9f3f8);
     font-family: 'Segoe UI', sans-serif;
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
-/* ---------- Page Container ---------- */
-.container {
+.schedule-wrapper {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
-}
-
-.alert-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    margin-top: -55px;
+    margin-top: -35px;
     margin-left: 50px;
 }
 
-/* ---------- Headings ---------- */
-h2 {
-    font-size: 42px;
-    font-weight: 800;
-    margin-bottom: 60px;
-    color: #0f172a;
-    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.06);
-    letter-spacing: 0.5px;
-    position: relative;
-}
-
-h2::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 6px;
-    background: linear-gradient(to right, #116caf, #3ad9ed);
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-/* ---------- Dropdown Section ---------- */
+/* ---------- Dropdown Section (Updated) ---------- */
 .dropdown-container {
     display: flex;
     align-items: center;
@@ -51,8 +25,9 @@ h2::after {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
     width: fit-content;
     gap: 16px;
-    margin-bottom: 40px;
     margin-top: -35px;
+    margin-bottom: 40px;
+
 }
 
 .dropdown-container label {
@@ -84,117 +59,102 @@ h2::after {
     border-color: #999;
 }
 
-/* ---------- Main Content ---------- */
-.main-content-container {
+
+
+/* ---------- Headings ---------- */
+h2 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 60px;
+    color: #0f172a;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.06);
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 6px;
+    background: linear-gradient(to right, #116caf, #3ad9ed);
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+
+/* ---------- Top Section Flex Layout ---------- */
+.main-content {
     display: flex;
     justify-content: space-between;
-    gap: 30px;
-    flex-wrap: wrap;
+    gap: 40px;
+    flex-wrap: nowrap;
+    margin-top: 20px;
 }
 
-/* ---------- Alert Table ---------- */
-.alert-table {
-    flex-grow: 1;
-    min-width: 600px;
-    border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.3s ease-in-out;
-    height: auto;
-    display: flex;
-    flex-direction: column;
+/* ---------- Table Container ---------- */
+.schedule-table-container {
     flex: 1;
+    max-width: calc(100% - 320px);
 }
 
-.scrollable-alerts table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.scrollable-alerts thead th {
-    position: sticky;
-    top: 0;
+/* ---------- Table Styling ---------- */
+.table-section {
     background-color: #ffffff;
-    z-index: 2;
-    text-align: left;
-    padding: 12px;
-    font-weight: bold;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    margin-bottom: 40px;
 }
-
-.scrollable-alerts {
-    display: block;
-    overflow-y: auto;
-    max-height: calc(56px * 5); /* 1 row for header + 5 rows of data */
-    border-radius: 10px;
-}
-
-/* Optional: match row height */
-.scrollable-alerts td, .scrollable-alerts th {
-    padding: 16px;
-    line-height: 1.5;
-}
-
-
-/* Optional: Scrollbar styling */
-.scrollable-alerts::-webkit-scrollbar {
-    width: 8px;
-}
-
-.scrollable-alerts::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
 
 table {
     width: 100%;
     border-collapse: collapse;
-    border-spacing: 0;
     font-size: 15px;
-    background-color: white;
 }
 
-.calendar-body thead {
-    background-color: white;
+.table-section thead {
+    background-color: rgba(24, 62, 85, 0.94);
+    color: #fff;
 }
 
-
-.alert-table thead th {
+.table-section th {
     padding: 16px 20px;
     font-weight: 700;
     text-align: left;
+    border-bottom: 2px solid rgba(58, 217, 237, 0.93);
     letter-spacing: 0.4px;
-    background-color: rgba(24, 62, 85, 0.94);
-    color: #fff;
-    border-bottom: 3px solid rgba(58, 217, 237, 0.93);
+    color: white;
+
 }
 
-
-.alert-table td {
+.table-section td {
     padding: 14px 20px;
     border-bottom: 1px solid #f1f5f9;
     color: #333;
     vertical-align: top;
 }
 
-.alert-table tr:last-child td {
-    border-bottom: none;
-}
-
-.alert-table tr:hover {
+tbody tr:hover {
     background-color: #f4faff;
     transition: background-color 0.2s ease-in-out;
 }
 
-.alerts-sub-heading {
-    margin-bottom: 12px;
-    font-size: 18px;
-    color: #df8900;
-    font-weight: 700;
-    text-align: center;
-    text-decoration: underline;
+.table-section thead tr:hover {
+    background-color: transparent !important;
 }
 
+.table-section tr:last-child td {
+    border-bottom: none;
+}
+
+.table-section th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table-section th:last-child {
+    border-top-right-radius: 12px;
+}
 
 /* ---------- Calendar Widget Styling (Modern & Small) ---------- */
 .calendar-widget {
@@ -208,7 +168,7 @@ table {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: -40px;
+    margin-top: 10px;
     overflow: hidden;
 }
 
@@ -219,7 +179,6 @@ table {
     gap: 8px;
     margin-bottom: 10px;
     flex-wrap: wrap;
-    background-color: white;
 }
 
 .calendar-header button {
@@ -290,15 +249,7 @@ table {
     background-color: #e1f5ff;
 }
 
-.alerts-layout-row {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-}
-
-.main-content h4 {
+.schedule-heading-container h4 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 20px;
