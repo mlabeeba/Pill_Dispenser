@@ -1,7 +1,3 @@
-Here’s your updated `README.md` with a new section that credits the hardware team and describes the integration between the web app and the dispenser. I’ve also added a placeholder for the image of the hardware device:
-
----
-
 # 💊 Smart Prescription Dispenser Web-Application
 
 A full-stack web application designed to support pharmacists in scheduling and managing patients’ medications remotely. This system integrates Supabase for database/authentication, Flask for backend routing, and a dynamic HTML/CSS/JS frontend.
