@@ -116,17 +116,21 @@ The app will run at: `http://localhost:5000`
 
 ---
 
-## Security Notes
-
-* Authentication is handled securely via Supabase.
-* Environment keys are stored in `.env` and should not be committed.
-* Backend endpoints validate session data before processing requests.
-
----
-
 ## Authors
 
 * **Nasya James** — [@nasyatj](https://github.com/nasyatj)
 * **Maria Labeeba** — [@mlabeeba](https://github.com/mlabeeba)
 * **Hardware Members** — Harrison Kalathil, Maninder Arora
+
+---
+
+## Capstone Poster
+
+Below is the official poster summarizing our Smart Prescription Dispenser Capstone Project:
+
+<p align="center">
+  <img src="static/images/capstone_poster.png" alt="Capstone Poster" width="600"/>
+</p>
+<p align="center"><em>Final poster presented for the COE70B Capstone Design Project (2024–2025).</em></p>
+
 
