@@ -27,7 +27,7 @@ A full-stack web application designed to support pharmacists in scheduling and m
 
 ---
 
-## 🔌 Hardware Integration
+## Hardware Integration
 
 This web application was developed to work in tandem with a **custom-built smart pill dispenser** created by the hardware members of our team. Once a pharmacist schedules a medication for a patient, the dispenser automatically releases the correct dosage at the scheduled time.
 
@@ -37,9 +37,9 @@ The dispenser includes:
 * A stepper motor mechanism for rotating compartments
 * A Raspberry Pi for executing scheduled dispense commands
 
-📸 **Hardware Prototype:**
-<img src="static/images/dispenser_photo.png" alt="Smart Dispenser Hardware" width="400"/>
-<sub><em>Actual image of the physical dispenser made by our hardware team.</em></sub>
+**Hardware Prototype:**
+* <img src="static/images/dispenser_photo.png" alt="Smart Dispenser Hardware" width="400"/> 
+*<sub><em>Actual image of the physical dispenser made by our hardware team.</em></sub>
 
 *Hardware developed by:*
 
