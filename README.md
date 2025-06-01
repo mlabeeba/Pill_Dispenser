@@ -39,7 +39,7 @@ The dispenser includes:
 
 **Hardware Prototype:**
 <p align="center">
-  <img src="images/dispenser_photo.jpg" alt="Smart Dispenser Hardware" width="400"/>
+  <img src="static/images/dispenser_photo.jpg" alt="Smart Dispenser Hardware" width="400"/>
 </p>
 <p align="center"><em>Actual image of the physical dispenser made by our hardware team.</em></p>
 
