@@ -38,7 +38,8 @@ The dispenser includes:
 * A Raspberry Pi for executing scheduled dispense commands
 
 📸 **Hardware Prototype:**
-![Smart Dispenser Hardware](static/images/dispenser_photo.png) <sub>*Actual image of the physical dispenser made by our hardware team.*</sub>
+<img src="static/images/dispenser_photo.png" alt="Smart Dispenser Hardware" width="400"/>
+<sub><em>Actual image of the physical dispenser made by our hardware team.</em></sub>
 
 *Hardware developed by:*
 
